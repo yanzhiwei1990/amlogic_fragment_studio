@@ -17,6 +17,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.os.Build;
 
+import com.example.fragment.dialog.DialogManager;
+
 public class ScanMainActivity extends Activity {
     private static final String TAG = "ScanMainActivity";
 	private Button mDishSetup = null;
@@ -24,6 +26,7 @@ public class ScanMainActivity extends Activity {
 	private int mCurrentFragment = 0;
     private ScanFragmentManager mScanFragmentManager = null;
     private ParameterMananer mParameterMananer = null;
+    private DialogManager mDialogManager = null;
 	
 	private static final int INIT_FRAGMENT = 0;
 	private static final int SCAN_FRAGMENT = 1;
@@ -36,7 +39,9 @@ public class ScanMainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		mScanFragmentManager = new ScanFragmentManager(this);
 		mScanFragmentManager.show(new PlaceholderFragment());
+		mCurrentFragment = INIT_FRAGMENT;
 		mParameterMananer = new ParameterMananer(this);
+		mDialogManager = new DialogManager(null, mParameterMananer);
 	}
 
 	
@@ -75,6 +80,7 @@ public class ScanMainActivity extends Activity {
 				public void onClick(View v) {
 					//getFragmentManager().beginTransaction().add(R.id.container, DishSetupFragment.newInstance()).commit();
 					mScanFragmentManager.show(ScanDishSetupFragment.newInstance());
+					mCurrentFragment = DISH_SETUP_FRAGMENT;
 					Log.d(TAG, "ScanDishSetupFragment");
 				}
 			});
@@ -83,6 +89,7 @@ public class ScanMainActivity extends Activity {
 				public void onClick(View v) {
 					//getFragmentManager().beginTransaction().add(R.id.container, ScanChannelFragment.newInstance()).commit();
 					mScanFragmentManager.show(ScanChannelFragment.newInstance());
+					mCurrentFragment = SCAN_FRAGMENT;
 					Log.d(TAG, "ScanChannelFragment");
 				}
 			});
@@ -92,6 +99,8 @@ public class ScanMainActivity extends Activity {
 	public ParameterMananer getParameterMananer() {
 		return mParameterMananer;
 	}
+
+	public DialogManager getDialogManager() {return mDialogManager;}
 
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
