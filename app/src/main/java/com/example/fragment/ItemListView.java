@@ -35,16 +35,19 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     private ListItemSelectedListener mListItemSelectedListener;
     private ListItemFocusedListener mListItemFocusedListener;
     private ListSwitchedListener mListSwitchedListener;
+    private ListTypeSwitchedListener mListTypeSwitchedListener;
     
     public static final String LIST_LEFT = "left";
     public static final String LIST_RIGHT = "right";
 
     public ItemListView(Context context) {
         super(context);
+        mContext = context;
+        setRootView();
+        setOnItemSelectedListener(this);
     }
     public ItemListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         mContext = context;
         setRootView();
         setOnItemSelectedListener(this);
@@ -63,6 +66,10 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
                     break;
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                     if (isLeftList(mListType)) {
+                        switchListType();
+                        if (mListTypeSwitchedListener != null) {
+                            mListTypeSwitchedListener.onListTypeSwitched(mListType);
+                        }
                         return true;
                     } else if (isRightList(mListType)) {
                     	if (mListSwitchedListener != null) {
@@ -139,6 +146,7 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
 
     @Override
     protected void onFocusChanged (boolean gainFocus, int direction, Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     	Log.d(TAG, "onFocusChanged mListType = " + mListType + ", gainFocus = " + gainFocus +", direction = " + direction);
         View item = getSelectedView();
         if (item != null) {
@@ -218,7 +226,11 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     public void setListSwitchedListener(ListSwitchedListener l) {
         mListSwitchedListener = l;
     }
-    
+
+    public void setListTypeSwitchedListener(ListTypeSwitchedListener l) {
+        mListTypeSwitchedListener = l;
+    }
+
     public interface ListItemSelectedListener {
         void onListItemSelected(int position, String type);
     }
@@ -230,7 +242,11 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     public interface ListSwitchedListener {
         void onListSwitched(String direction);
     }
-    
+
+    public interface ListTypeSwitchedListener {
+        void onListTypeSwitched(String listtype);
+    }
+
     static public boolean isLeftList(String type) {
     	if (ITEM_SATALLITE.equals(type) || ITEM_TRANSPONDER.equals(type)) {
     		return true;
@@ -243,6 +259,14 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     		return true;
     	}
     	return false;
+    }
+
+    private void switchListType() {
+        if (ITEM_SATALLITE.equals(mListType)) {
+            mListType = ITEM_TRANSPONDER;
+        } else {
+            mListType = ITEM_SATALLITE;
+        }
     }
 }
 

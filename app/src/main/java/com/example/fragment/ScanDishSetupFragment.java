@@ -6,9 +6,11 @@ import com.example.fragment.ItemAdapter.ItemDetail;
 import com.example.fragment.ItemListView.ListItemFocusedListener;
 import com.example.fragment.ItemListView.ListItemSelectedListener;
 import com.example.fragment.ItemListView.ListSwitchedListener;
+import com.example.fragment.ItemListView.ListTypeSwitchedListener;
 import com.example.fragment.R.color;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,6 +20,7 @@ import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,50 +36,56 @@ public class ScanDishSetupFragment extends Fragment {
 	private String mCurrentListType = ParameterMananer.ITEM_SATALLITE;
 	private String mCurrentListFocus = ItemListView.LIST_LEFT;
 	private ParameterMananer mParameterMananer;
+	private LinearLayout mSatelliteQuickkey;
+	private LinearLayout mSatelliteQuickkey1;
+	private LinearLayout mSatelliteQuickkey2;
+    private TextView mItemTitleTextView;
+    private TextView mOptionTitleItemTextView;
 	
-	public static ScanDishSetupFragment newInstance() {
+	/*public static ScanDishSetupFragment newInstance() {
         return new ScanDishSetupFragment();
-    }
+    }*/
+    public ScanDishSetupFragment() {
+
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    	Log.d(TAG, "onCreateView");
 		mParameterMananer = ((ScanMainActivity)getActivity()).getParameterMananer();
 		View rootView = inflater.inflate(R.layout.fragment_dish_setup, container, false);
-		//View headView1 = inflater.inflate(R.layout.list_head, null, false);
-		//View headView2 = inflater.inflate(R.layout.list_head, null, false);
+		mSatelliteQuickkey1 = (LinearLayout) rootView.findViewById(R.id.function_key1);
+		mSatelliteQuickkey2 = (LinearLayout) rootView.findViewById(R.id.function_key2);
+		creatFour1();
+		creatFour2();
+
 		mListViewItem = (ItemListView) rootView.findViewById(R.id.listview_item);
 		mListViewOption = (ItemListView) rootView.findViewById(R.id.listview_option);
 		mItemDetailItem.addAll(mParameterMananer.getItemList(mParameterMananer.getCurrentListType()));
 		mItemAdapterItem = new ItemAdapter(mItemDetailItem, getActivity());
 		mListViewItem.setAdapter(mItemAdapterItem);
-		//mListViewItem.setLabelFor(123);
-		mListViewItem.setTag(ParameterMananer.ITEM_SATALLITE);
+		mListViewItem.setTag(mParameterMananer.getCurrentListType()/*ParameterMananer.ITEM_SATALLITE*/);
 
-		//mListViewItem.setOnItemClickListener(mOnItemClickListener);
-		TextView textView1 = (TextView) rootView.findViewById(R.id.listview_item_title);
-		textView1.setText("Satellite");
-
+		mItemTitleTextView = (TextView) rootView.findViewById(R.id.listview_item_title);
+        mItemTitleTextView.setText(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? R.string.list_type_satellite : R.string.list_type_transponder);
 		mListViewItem.requestFocus();
 
-		//mListViewItem.setOnFocusChangeListener(mOnFocusChangeListener);
-		//mListViewItem.setOnItemSelectedListener(mOnItemSelectedListener);
 		mListViewItem.setListItemSelectedListener(mListItemSelectedListener);
 		mListViewItem.setListItemFocusedListener(mListItemFocusedListener);
 		mListViewItem.setListSwitchedListener(mListSwitchedListener);
-		mListViewItem.setListType(ItemListView.ITEM_SATALLITE);
+		mListViewItem.setListTypeSwitchedListener(mListTypeSwitchedListener);
+		mListViewItem.setListType(mParameterMananer.getCurrentListType()/*ItemListView.ITEM_SATALLITE*/);
 		
 		mItemDetailOption.addAll(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatellite()));
 		mItemAdapterOption = new ItemAdapter(mItemDetailOption, getActivity());
 		mListViewOption.setAdapter(mItemAdapterOption);
-		//mListViewOption.setLabelFor(456);
 		mListViewItem.setTag(ParameterMananer.ITEM_SATALLITE_OPTION);
-		//mListViewOption.setOnItemClickListener(mOnItemClickListener);
-		TextView textView2 = (TextView) rootView.findViewById(R.id.listview_option_title);
-		textView2.setText("Ku_NewSat2");
+		mListViewItem.setSelection(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatellite() : mParameterMananer.getCurrentTransponder());
 
-		mListViewOption.setSelectionAfterHeaderView();
-		//mListViewOption.setOnFocusChangeListener(mOnFocusChangeListener);
-		//mListViewOption.setOnItemSelectedListener(mOnItemSelectedListener);
+		mOptionTitleItemTextView = (TextView) rootView.findViewById(R.id.listview_option_title);
+        mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatellite() : mParameterMananer.getCurrentTransponder())/*"Ku_NewSat2"*/);
+
+		//mListViewOption.setSelectionAfterHeaderView();
 		mListViewOption.setListItemSelectedListener(mListItemSelectedListener);
 		mListViewOption.setListItemFocusedListener(mListItemFocusedListener);
 		mListViewOption.setListSwitchedListener(mListSwitchedListener);
@@ -84,7 +93,55 @@ public class ScanDishSetupFragment extends Fragment {
 		mListViewOption.cleanChoosed();
 		return rootView;
 	}
-	
+
+	private void changeSatelliteQuickkeyLayout() {
+		mSatelliteQuickkey.removeAllViews();
+		mSatelliteQuickkey.addView(mSatelliteQuickkey1);
+		mSatelliteQuickkey.addView(mSatelliteQuickkey2);
+	}
+
+	private void creatFour1() {
+		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = (View) inflater.inflate(R.layout.four_display1, null);
+		mSatelliteQuickkey1.removeAllViews();
+		mSatelliteQuickkey1.addView(view);
+	}
+
+	private void creatFour2() {
+		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = (View) inflater.inflate(R.layout.four_display2, null);
+		mSatelliteQuickkey2.removeAllViews();
+		mSatelliteQuickkey2.addView(view);
+	}
+
+	private void creatConfirmandExit1() {
+		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = (View) inflater.inflate(R.layout.confirm_exit_display, null);
+		mSatelliteQuickkey1.removeAllViews();
+		mSatelliteQuickkey1.addView(view);
+	}
+
+	private void creatSatelliteandScan2() {
+		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = (View) inflater.inflate(R.layout.satellite_scan_display, null);
+		mSatelliteQuickkey2.removeAllViews();
+		mSatelliteQuickkey2.addView(view);
+	}
+
+	private void creatSetlimitandSetlocation1() {
+		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = (View) inflater.inflate(R.layout.limit_location_display, null);
+		mSatelliteQuickkey1.removeAllViews();
+		mSatelliteQuickkey1.addView(view);
+	}
+
+	private void creatEditandExit2() {
+		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = (View) inflater.inflate(R.layout.edit_exit_wheel_display, null);
+		mSatelliteQuickkey2.removeAllViews();
+		mSatelliteQuickkey2.addView(view);
+	}
+
 	/*AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
 
 		@Override
@@ -174,12 +231,36 @@ public class ScanDishSetupFragment extends Fragment {
             if (ItemListView.LIST_LEFT.equals(mCurrentListFocus)) {
             	mListViewOption.cleanChoosed();
             	mListViewItem.requestFocus();
+            	creatFour1();
+            	creatFour2();
             } else if (ItemListView.LIST_RIGHT.equals(mCurrentListFocus)) {
             	mListViewItem.cleanChoosed();
             	mListViewOption.requestFocus();
+				creatConfirmandExit1();
+				creatSatelliteandScan2();
             }
 		}
 		
+	};
+
+	ListTypeSwitchedListener mListTypeSwitchedListener = new ListTypeSwitchedListener() {
+		@Override
+		public void onListTypeSwitched(String listtype) {
+			mCurrentListType = listtype;
+			mParameterMananer.setCurrentListType(mCurrentListType);
+			mListViewItem.cleanChoosed();
+			mItemAdapterItem.reFill(mParameterMananer.getItemList(mParameterMananer.getCurrentListType()));
+			if (ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType)) {
+				mListViewItem.setSelection(mParameterMananer.getCurrentSatellite());
+			} else {
+				mListViewItem.setSelection(mParameterMananer.getCurrentTransponder());
+			}
+			mListViewItem.requestFocus();
+            mItemTitleTextView.setText(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? R.string.list_type_satellite : R.string.list_type_transponder);
+			mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType) ? mParameterMananer.getCurrentSatellite() : mParameterMananer.getCurrentTransponder()));
+			mListViewOption.cleanChoosed();
+            mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatellite() : mParameterMananer.getCurrentTransponder())/*"Ku_NewSat2"*/);
+		}
 	};
 	
 	/*public boolean dispatchKeyEvent (KeyEvent event) {

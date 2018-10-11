@@ -1,10 +1,7 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/circle_red"
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_vertical|center_horizontal"
-    android:background="#37474F"
-    android:gravity="center_vertical|center_horizontal"
-    android:text="scan_channel_page"
-    android:textColor="#B3EEEEEE" />
+    android:layout_height="wrap_content">
 
+
+</merge>

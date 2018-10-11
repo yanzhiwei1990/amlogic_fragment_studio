@@ -13,8 +13,13 @@ public class ScanFragmentManager {
 	private final Activity mActivity;
     private final FragmentManager mFragmentManager;
     private int mFragmentCount;
+    private int mCurrentFragment;
     private long mShowDurationMillis = 100000;
     private final Handler mHandler = new Handler();
+
+    public static final int INIT_FRAGMENT = 0;
+    public static final int SCAN_FRAGMENT = 1;
+    public static final int DISH_SETUP_FRAGMENT = 2;
     
     private final Runnable mHideAllRunnable = new Runnable() {
         @Override

@@ -7,6 +7,7 @@ import java.util.List;
 import com.example.fragment.ItemAdapter.ItemDetail;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 public class ParameterMananer {
     
@@ -17,6 +18,10 @@ public class ParameterMananer {
 	public static final String ITEM_TRANSPONDER            = "transponder";
 	public static final String ITEM_SATALLITE_OPTION       = "satallite_option";
     public static final String ITEM_TRANSPONDER_OPTION     = "tansponder_option";
+
+    public static final String SAVE_SATELITE_POSITION = "satellite_position";
+	public static final String SAVE_TRANSPONDER_POSITION = "transponder_position";
+	public static final String SAVE_CURRENT_LIST_TYPE = "current_list_type";
 	
 	public ParameterMananer(Context context) {
 		this.mContext = context;
@@ -43,38 +48,63 @@ public class ParameterMananer {
 		return list;
 	}
 	
-	private int mCurrentSatellite = 0;
-	private String mCurrentListType = ITEM_SATALLITE;
+	private int mCurrentSatellite = -1;
+	private String mCurrentListType = null;
 	private final String[] ALL_SATALLITE = {"001 013.OE Ku_HOTBIRD 6", "002 013.OE Ku_HOTBIRD 6", "003 013.OE Ku_HOTBIRD 6",
 			                                "004 013.OE Ku_HOTBIRD 6", "005 013.OE Ku_HOTBIRD 6", "006 013.OE Ku_HOTBIRD 6",
 			                                "007 013.OE Ku_HOTBIRD 6"};
-	private int mCurrentTransponder = 0;
+	private int mCurrentTransponder = -1;
 	private final String[] ALL_TRANSPONDER = {"001 10723 H 29900008", "001 10723 H 29900008", "001 10723 H 29900008",
 			                                  "001 10723 H 29900008", "001 10723 H 29900008", "001 10723 H 29900008",
 			                                  "001 10723 H 29900008"};
 	
 	public int getCurrentSatellite() {
+		if (mCurrentSatellite == -1) {
+			mCurrentSatellite = getIntParameters(SAVE_SATELITE_POSITION);
+			if (mCurrentSatellite == -1) {
+				saveIntParameters(SAVE_SATELITE_POSITION, 0);
+				mCurrentSatellite = 0;
+			}
+		}
 		return mCurrentSatellite;
 	}
 	
 	public void setCurrentSatellite(int position) {
 		mCurrentSatellite = position;
+		saveIntParameters(SAVE_SATELITE_POSITION, position);
 	}
 	
 	public String getCurrentListType() {
+		if (mCurrentListType == null) {
+			mCurrentListType = getStringParameters(SAVE_CURRENT_LIST_TYPE);
+			if (mCurrentListType == null) {
+				saveStringParameters(SAVE_CURRENT_LIST_TYPE, ITEM_SATALLITE);
+				mCurrentListType = ITEM_SATALLITE;
+			}
+		}
 		return mCurrentListType;
 	}
 	
 	public void setCurrentListType(String type) {
 		mCurrentListType = type;
+		saveStringParameters(SAVE_CURRENT_LIST_TYPE, type);
 	}
 	
 	public int getCurrentTransponder() {
+		//return getIntParameters(SAVE_TRANSPONDER_POSITION);
+		if (mCurrentTransponder == -1) {
+			mCurrentTransponder = getIntParameters(SAVE_TRANSPONDER_POSITION);
+			if (mCurrentTransponder == -1) {
+				saveIntParameters(SAVE_TRANSPONDER_POSITION, 0);
+				mCurrentTransponder = 0;
+			}
+		}
 		return mCurrentTransponder;
 	}
 	
 	public void setCurrentTransponder(int position) {
 		mCurrentTransponder = position;
+		saveIntParameters(SAVE_TRANSPONDER_POSITION, position);
 	}
 	
 	public LinkedList<ItemDetail> getTransponderList() {
@@ -83,7 +113,7 @@ public class ParameterMananer {
 		if (all == null) {
 			return null;
 		}
-		int current = getCurrentSatellite();
+		int current = getCurrentTransponder();
 		int type = 0;
 		for (int i = 0; i < all.length; i++) {
 			if (current == i) {
@@ -106,8 +136,8 @@ public class ParameterMananer {
 			return new LinkedList<ItemDetail>();
 		}
 	}
-	
-	public String getParameterListTitle(int type, int position) {
+
+	public String getParameterListTitle(String type, int position) {
 		String title = null;
 		//need to add get function, debug as below
 		title = "Ku_HOTBIRO6,7A,8";
@@ -161,5 +191,29 @@ public class ParameterMananer {
 		}
 
 		return list;
+	}
+
+	public void saveIntParameters(String key, int value) {
+		SharedPreferences sp = mContext.getSharedPreferences("dish_parameter", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sp.edit();
+		editor.putInt(key, value);
+		editor.commit();
+	}
+
+	public int getIntParameters(String key) {
+		SharedPreferences sp = mContext.getSharedPreferences("dish_parameter", Context.MODE_PRIVATE);
+		return sp.getInt(key, -1);
+	}
+
+	public void saveStringParameters(String key, String value) {
+		SharedPreferences sp = mContext.getSharedPreferences("dish_parameter", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sp.edit();
+		editor.putString(key, value);
+		editor.commit();
+	}
+
+	public String getStringParameters(String key) {
+		SharedPreferences sp = mContext.getSharedPreferences("dish_parameter", Context.MODE_PRIVATE);
+		return sp.getString(key, null);
 	}
 }

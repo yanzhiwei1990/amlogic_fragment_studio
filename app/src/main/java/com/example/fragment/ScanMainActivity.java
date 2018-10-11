@@ -3,6 +3,8 @@ package com.example.fragment;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -16,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.os.Build;
+import android.widget.Toast;
 
 import com.example.fragment.dialog.DialogManager;
 
@@ -28,9 +31,9 @@ public class ScanMainActivity extends Activity {
     private ParameterMananer mParameterMananer = null;
     private DialogManager mDialogManager = null;
 	
-	private static final int INIT_FRAGMENT = 0;
-	private static final int SCAN_FRAGMENT = 1;
-	private static final int DISH_SETUP_FRAGMENT = 2;
+
+
+	public static final int REQUEST_CODE_START_SETUP_ACTIVITY = 1;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,7 @@ public class ScanMainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		mScanFragmentManager = new ScanFragmentManager(this);
 		mScanFragmentManager.show(new PlaceholderFragment());
-		mCurrentFragment = INIT_FRAGMENT;
+		mCurrentFragment = ScanFragmentManager.INIT_FRAGMENT;
 		mParameterMananer = new ParameterMananer(this);
 		mDialogManager = new DialogManager(null, mParameterMananer);
 	}
@@ -50,59 +53,20 @@ public class ScanMainActivity extends Activity {
 		super.onDestroy();
 		mScanFragmentManager.removeRunnable();
 	}
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public class PlaceholderFragment extends Fragment {
-
-		Button mDishSetup;
-		Button mScanChannel;
-		
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-			initButton(rootView);
-			return rootView;
-		}
-
-		private void initButton(final View view) {
-			if (view == null) {
-				return;
-			}
-			mDishSetup = (Button) view.findViewById(R.id.button_dish_setup);
-			mScanChannel = (Button) view.findViewById(R.id.button_scan_channel);
-			mScanChannel.requestFocus();
-			mDishSetup.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					//getFragmentManager().beginTransaction().add(R.id.container, DishSetupFragment.newInstance()).commit();
-					mScanFragmentManager.show(ScanDishSetupFragment.newInstance());
-					mCurrentFragment = DISH_SETUP_FRAGMENT;
-					Log.d(TAG, "ScanDishSetupFragment");
-				}
-			});
-			mScanChannel.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					//getFragmentManager().beginTransaction().add(R.id.container, ScanChannelFragment.newInstance()).commit();
-					mScanFragmentManager.show(ScanChannelFragment.newInstance());
-					mCurrentFragment = SCAN_FRAGMENT;
-					Log.d(TAG, "ScanChannelFragment");
-				}
-			});
-		}
-	}
 	
 	public ParameterMananer getParameterMananer() {
 		return mParameterMananer;
 	}
 
-	public DialogManager getDialogManager() {return mDialogManager;}
+	public DialogManager getDialogManager() {
+		return mDialogManager;
+	}
 
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
+	public ScanFragmentManager getScanFragmentManager() {
+		return mScanFragmentManager;
+	}
+
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (mScanFragmentManager.isActive()) {
 				mScanFragmentManager.popSideFragment();
@@ -110,6 +74,23 @@ public class ScanMainActivity extends Activity {
 				return true;
 			}
 		}
-		return super.onKeyUp(keyCode, event);
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_CODE_START_SETUP_ACTIVITY:
+				if (resultCode == RESULT_OK) {
+					setResult(RESULT_OK, data);
+					finish();
+				} else {
+					setResult(RESULT_CANCELED);
+				}
+				break;
+			default:
+				// do nothing
+				Log.d(TAG, "onActivityResult other request");
+		}
 	}
 }
