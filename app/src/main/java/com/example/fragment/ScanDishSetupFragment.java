@@ -231,14 +231,20 @@ public class ScanDishSetupFragment extends Fragment {
             if (ItemListView.LIST_LEFT.equals(mCurrentListFocus)) {
             	mListViewOption.cleanChoosed();
             	mListViewItem.requestFocus();
+
             	creatFour1();
             	creatFour2();
             } else if (ItemListView.LIST_RIGHT.equals(mCurrentListFocus)) {
-            	mListViewItem.cleanChoosed();
+            	//mListViewItem.cleanChoosed();
             	mListViewOption.requestFocus();
 				creatConfirmandExit1();
 				creatSatelliteandScan2();
             }
+			if (ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType)) {
+				mListViewItem.setSelection(mParameterMananer.getCurrentSatellite());
+			} else {
+				mListViewItem.setSelection(mParameterMananer.getCurrentTransponder());
+			}
 		}
 		
 	};
