@@ -13,8 +13,10 @@
     <string name="dialog_title_edit">Edit</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_ok">Ok</string>
+    <string name="dialog_save">Save</string>
+    <string name="dialog_scan">Scan</string>
     <string name="dialog_confirm">Confirm</string>
-    <string name="dialog_confirm_delete">Do you want to delete this?</string>
+    <string name="dialog_confirm_delete">Do you want to delete this ?</string>
     <string name="transponder_item_transponder">Transponder</string>
     <string name="transponder_item_frequency">Frequency</string>
     <string name="transponder_item_symbol">Symbol</string>
@@ -25,6 +27,9 @@
     <string name="satellite_item_longitude_direction">Longitude Direction</string>
     <string name="satellite_item_longitude_angle">Longitude Angle</string>
     <string name="satellite_item_band">Band</string>
+
+    <string name="dialog_diseqc_1_2_strength">Strength</string>
+    <string name="dialog_diseqc_1_2_quality">Quality</string>
 
     <string name="search_activity_not_found">Channel search activity is unavailable!</string>
 

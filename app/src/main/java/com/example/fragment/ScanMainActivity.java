@@ -44,7 +44,7 @@ public class ScanMainActivity extends Activity {
 		mScanFragmentManager.show(new PlaceholderFragment());
 		mCurrentFragment = ScanFragmentManager.INIT_FRAGMENT;
 		mParameterMananer = new ParameterMananer(this);
-		mDialogManager = new DialogManager(null, mParameterMananer);
+		mDialogManager = new DialogManager(this, mParameterMananer);
 	}
 
 	

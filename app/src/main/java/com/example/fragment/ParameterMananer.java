@@ -5,9 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.example.fragment.ItemAdapter.ItemDetail;
+import com.example.fragment.dialog.CustomDialog;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+import android.util.Log;
 
 public class ParameterMananer {
     
@@ -22,7 +25,75 @@ public class ParameterMananer {
     public static final String SAVE_SATELITE_POSITION = "satellite_position";
 	public static final String SAVE_TRANSPONDER_POSITION = "transponder_position";
 	public static final String SAVE_CURRENT_LIST_TYPE = "current_list_type";
-	
+
+	public static final String KEY_SATALLITE = "key_satallite";
+	public static final String KEY_TRANSPONDER = "key_transponder";
+	public static final String KEY_LNB_TYPE = "key_lnb_type";
+	//unicable
+	public static final String KEY_UNICABLE = "key_unicable";
+	public static final String KEY_UNICABLE_SWITCH = "key_unicable_switch";
+	public static final String KEY_USER_BAND = "key_user_band";
+	public static final String KEY_UB_FREQUENCY = "key_ub_frequency";
+	public static final String KEY_POSITION = "key_position";
+
+	public static final String KEY_LNB_POWER = "key_lnb_power";
+	public static final String KEY_22_KHZ = "key_22_khz";
+	public static final String KEY_TONE_BURST = "key_tone_burst";
+	public static final String KEY_DISEQC1_0 = "key_diseqc1_0";
+	public static final String KEY_DISEQC1_1 = "key_diseqc1_1";
+	public static final String KEY_MOTOR = "key_motor";
+    public static final String KEY_DISEQC1_2 = "key_diseqc1_2";
+    public static final String KEY_DISEQC1_2_DISH_LIMITS_STATUS = "key_dish_limit_status";
+    public static final String KEY_DISEQC1_2_DISH_EAST_LIMITS = "key_dish_east_limit";
+    public static final String KEY_DISEQC1_2_DISH_WEST_LIMITS = "key_dish_west_limit";
+    public static final String KEY_DISEQC1_2_DISH_MOVE_DIRECTION = "key_dish_move_direction";
+    public static final String KEY_DISEQC1_2_DISH_MOVE_STEP = "key_dish_move_step";
+    public static final String KEY_DISEQC1_2_DISH_CURRENT_POSITION = "key_dish_current_position";
+    public static final String KEY_DISEQC1_2_DISH_SAVE_POSITION = "key_dish_save_to_position";
+    public static final String KEY_DISEQC1_2_DISH_MOVE_TO_POSITION = "key_dish_move_to_position";
+
+	public static final String[] ID_DIALOG_KEY_COLLECTOR = {KEY_SATALLITE, KEY_TRANSPONDER, KEY_LNB_TYPE, KEY_UNICABLE, KEY_LNB_POWER,
+			KEY_22_KHZ, KEY_TONE_BURST, KEY_DISEQC1_0, KEY_DISEQC1_1, KEY_MOTOR};
+	public static final String KEY_LNB_CUSTOM = "key_lnb_custom";
+	//default value
+	public static final String KEY_SATALLITE_DEFAULT_VALUE = "null";
+	public static final String KEY_TRANSPONDER_DEFAULT_VALUE = "null";
+	public static final String KEY_LNB_TYPE_DEFAULT_VALUE = "9750/10600";
+	//unicable
+	public static final String KEY_UNICABLE_DEFAULT_VALUE = "off";
+	public static final String KEY_UNICABLE_SWITCH_DEFAULT_VALUE = "off";
+	public static final String KEY_USER_BAND_DEFAULT_VALUE = "0";
+	public static final String KEY_UB_FREQUENCY_DEFAULT_VALUE = "0";
+	public static final String KEY_POSITION_DEFAULT_VALUE = "false";
+
+	public static final String KEY_LNB_POWER_DEFAULT_VALUE = "13/18V";
+	public static final String KEY_22_KHZ_DEFAULT_VALUE = "auto";
+	public static final String KEY_TONE_BURST_DEFAULT_VALUE = "None";
+	public static final String KEY_DISEQC1_0_DEFAULT_VALUE = "None";
+	public static final String KEY_DISEQC1_1_DEFAULT_VALUE = "None";
+	public static final String KEY_MOTOR_DEFAULT_VALUE = "None";
+
+	//default value that is save by index
+	public static final int KEY_SATALLITE_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_TRANSPONDER_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_LNB_TYPE_DEFAULT_INDEX_INDEX = 1;
+	//unicable
+	public static final int KEY_UNICABLE_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_UNICABLE_SWITCH_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_USER_BAND_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_UB_FREQUENCY_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_POSITION_DEFAULT_VALUE_INDEX = 0;
+
+	public static final int KEY_LNB_POWER_DEFAULT_VALUE_INDEX = 3;
+	public static final int KEY_22_KHZ_DEFAULT_VALUE_INDEX = 2;
+	public static final int KEY_TONE_BURST_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_DISEQC1_0_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_DISEQC1_1_DEFAULT_VALUE_INDEX = 0;
+	public static final int KEY_MOTOR_DEFAULT_VALUE_INDEX = 0;
+    public static final int KEY_DISEQC1_2_DISH_LIMITS_STATUS_DEFAULT_VALUE_INDEX = 0;
+
+	public static final String[] DIALOG_SET_ITEM_UNICABLE_KEY_LIST = {KEY_UNICABLE_SWITCH, KEY_USER_BAND, KEY_UB_FREQUENCY, KEY_POSITION};
+
 	public ParameterMananer(Context context) {
 		this.mContext = context;
 	}
@@ -150,30 +221,69 @@ public class ParameterMananer {
 		}
 		return title;
 	}
-	
+
+	//public static final String[] PARAMETER = {"LNB Type", "LNB Power", "22KHZ", "Toneburst", "DisEqC1.0", "DisEqC1.1", "Motor"};
+
 	private List<String> getParameterListType(String type, int position) {
 		List<String> list = new ArrayList<String>();
 		//need to add get function, debug as below
-		list.add("LNB Type");
+		/*list.add("LNB Type");
 		list.add("LNB Power");
 		list.add("22KHZ");
 		list.add("Toneburst");
 		list.add("DisEqC1.0");
 		list.add("DisEqC1.1");
-		list.add("Motor");
+		list.add("Motor");*/
+		for (int i = 0; i < CustomDialog.ID_DIALOG_TITLE_COLLECTOR.length; i++) {
+			list.add(CustomDialog.ID_DIALOG_TITLE_COLLECTOR[i]);
+		}
 		return list;
 	}
 	
 	private List<String> getParameterListValue(String type, int position) {
 		List<String> list = new ArrayList<String>();
 		//need to add get function, debug as below
-		list.add("09750/10600");
+		/*list.add("09750/10600");
 		list.add("13/18V");
 		list.add("Auto");
 		list.add("BurstB");
 		list.add("LNB2");
 		list.add("LNB6");
-		list.add("None");
+		list.add("None");*/
+		for (int i = 0; i < ParameterMananer.ID_DIALOG_KEY_COLLECTOR.length; i++) {
+			String result = "null";
+			switch (ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]) {
+				case KEY_SATALLITE:
+				case KEY_TRANSPONDER:
+					result = getStringParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]);
+					break;
+				case KEY_LNB_TYPE:
+					result = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_LNB_TYPE_LIST[(getIntParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]))];
+					break;
+				case KEY_UNICABLE:
+					result = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_UNICABLE_LIST[(getIntParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]))];
+					break;
+				case KEY_LNB_POWER:
+					result = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_LNB_POWER_LIST[(getIntParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]))];
+					break;
+				case KEY_22_KHZ:
+					result = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_22KHZ_LIST[(getIntParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]))];
+					break;
+				case KEY_TONE_BURST:
+					result = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_TONE_BURST_LIST[(getIntParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]))];
+					break;
+				case KEY_DISEQC1_0:
+					result = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_DISEQC1_0_LIST[(getIntParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]))];
+					break;
+				case KEY_DISEQC1_1:
+					result = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_DISEQC1_1_LIST[(getIntParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]))];
+					break;
+				case KEY_MOTOR:
+					result = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_MOTOR_LIST[(getIntParameters(ParameterMananer.ID_DIALOG_KEY_COLLECTOR[i]))];
+					break;
+			}
+			list.add(result);
+		}
 		return list;
 	}
 	
@@ -187,6 +297,7 @@ public class ParameterMananer {
 
 		int size = parametertype.size();
 		for (int i = 0; i < parametertype.size(); i++) {
+			Log.d(TAG, "");
 			list.add(new ItemDetail(ItemDetail.NONE_EDIT, parametertype.get(i), parametervalue.get(i)));
 		}
 
@@ -201,8 +312,68 @@ public class ParameterMananer {
 	}
 
 	public int getIntParameters(String key) {
+		int defValue = 0;
+		switch (key) {
+			case KEY_LNB_TYPE:
+				defValue = 1;
+				break;
+			case KEY_UNICABLE_SWITCH:
+				defValue = KEY_UNICABLE_SWITCH_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_USER_BAND:
+				defValue = KEY_USER_BAND_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_UB_FREQUENCY:
+				defValue = KEY_UB_FREQUENCY_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_POSITION:
+				defValue = KEY_POSITION_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_UNICABLE:
+				defValue = KEY_UNICABLE_SWITCH_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_LNB_POWER:
+				defValue = KEY_LNB_POWER_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_22_KHZ:
+				defValue = KEY_22_KHZ_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_TONE_BURST:
+				defValue = KEY_TONE_BURST_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_DISEQC1_0:
+				defValue = KEY_DISEQC1_0_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_DISEQC1_1:
+				defValue = KEY_DISEQC1_1_DEFAULT_VALUE_INDEX;
+				break;
+			case KEY_MOTOR:
+				defValue = KEY_MOTOR_DEFAULT_VALUE_INDEX;
+				break;
+            case KEY_DISEQC1_2_DISH_LIMITS_STATUS:
+                defValue = KEY_MOTOR_DEFAULT_VALUE_INDEX;
+                break;
+            case KEY_DISEQC1_2_DISH_EAST_LIMITS:
+                defValue = 180;
+                break;
+            case KEY_DISEQC1_2_DISH_WEST_LIMITS:
+                defValue = 180;
+                break;
+            case KEY_DISEQC1_2_DISH_MOVE_DIRECTION:
+                defValue = 0;
+                break;
+            case KEY_DISEQC1_2_DISH_MOVE_STEP:
+                defValue = 1;
+                break;
+            case KEY_DISEQC1_2_DISH_CURRENT_POSITION:
+                defValue = 0;
+                break;
+			default:
+				defValue = 0;
+				break;
+		}
 		SharedPreferences sp = mContext.getSharedPreferences("dish_parameter", Context.MODE_PRIVATE);
-		return sp.getInt(key, -1);
+		return sp.getInt(key, defValue);
 	}
 
 	public void saveStringParameters(String key, String value) {
@@ -213,7 +384,164 @@ public class ParameterMananer {
 	}
 
 	public String getStringParameters(String key) {
+		String defValue = null;
+		if (key == null) {
+			return null;
+		}
+		switch (key) {
+			case KEY_SATALLITE:
+				defValue = KEY_SATALLITE_DEFAULT_VALUE;
+				break;
+			case KEY_TRANSPONDER:
+				defValue = KEY_TRANSPONDER_DEFAULT_VALUE;
+				break;
+			case KEY_LNB_TYPE:
+				defValue = KEY_LNB_TYPE_DEFAULT_VALUE;
+				break;
+			case KEY_UNICABLE_SWITCH:
+				defValue = KEY_UNICABLE_SWITCH_DEFAULT_VALUE;
+				break;
+			case KEY_USER_BAND:
+				defValue = KEY_USER_BAND_DEFAULT_VALUE;
+				break;
+			case KEY_UB_FREQUENCY:
+				defValue = KEY_UB_FREQUENCY_DEFAULT_VALUE;
+				break;
+			case KEY_POSITION:
+				defValue = KEY_POSITION_DEFAULT_VALUE;
+				break;
+			case KEY_UNICABLE:
+				defValue = KEY_UNICABLE_SWITCH_DEFAULT_VALUE;
+				break;
+			case KEY_LNB_POWER:
+				defValue = KEY_LNB_POWER_DEFAULT_VALUE;
+				break;
+			case KEY_22_KHZ:
+				defValue = KEY_22_KHZ_DEFAULT_VALUE;
+				break;
+			case KEY_TONE_BURST:
+				defValue = KEY_TONE_BURST_DEFAULT_VALUE;
+				break;
+			case KEY_DISEQC1_0:
+				defValue = KEY_DISEQC1_0_DEFAULT_VALUE;
+				break;
+			case KEY_DISEQC1_1:
+				defValue = KEY_DISEQC1_1_DEFAULT_VALUE;
+				break;
+			case KEY_MOTOR:
+				defValue = KEY_MOTOR_DEFAULT_VALUE;
+				break;
+			case KEY_LNB_CUSTOM:
+				defValue = "";
+				break;
+			default:
+				defValue = "null";
+				break;
+		}
 		SharedPreferences sp = mContext.getSharedPreferences("dish_parameter", Context.MODE_PRIVATE);
-		return sp.getString(key, null);
+		String result = sp.getString(key, defValue);
+        Log.d(TAG, "getStringParameters key = " + key + ", result = " + result);
+        if (result == null) {
+			result = "null";
+		}
+		return result;
+	}
+
+	public int getSelectSingleItemValueIndex(String title) {
+		String key = switchTilteToKey(title);
+		String value = getStringParameters(key);
+		int result = 0;
+		if (key == null) {
+			return result;
+		}
+		switch (key) {
+			case KEY_LNB_TYPE:
+				result = getIndexFromArray(CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_LNB_TYPE_LIST, value);
+				break;
+			case KEY_UNICABLE_SWITCH:
+				result = getIndexFromArray(CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_UNICABLE_SWITCH_LIST, value);
+				break;
+			case KEY_USER_BAND:
+				result = getIndexFromArray(CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_UNICABLE_USER_BAND_LIST, value);
+				break;
+			case KEY_POSITION:
+				result = getIndexFromArray(CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_UNICABLE_POSITION_LIST, value);
+				break;
+		}
+        Log.d(TAG, "getSelectSingleItemValueIndex title = " + title + ", result = " + result);
+		return result;
+	}
+
+	public int getKeyValueIndex(String key, String value) {
+		int result = 0;
+		if (key == null) {
+		    return result;
+        }
+		switch (key) {
+			case KEY_LNB_TYPE:
+				result = getIndexFromArray(CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_LNB_TYPE_LIST, value);
+				break;
+			case KEY_UNICABLE_SWITCH:
+				result = getIndexFromArray(CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_UNICABLE_SWITCH_LIST, value);
+				break;
+			case KEY_USER_BAND:
+				result = getIndexFromArray(CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_UNICABLE_USER_BAND_LIST, value);
+				break;
+			case KEY_POSITION:
+				result = getIndexFromArray(CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_UNICABLE_POSITION_LIST, value);
+				break;
+		}
+        Log.d(TAG, "getKeyValueIndex key = " + key + ", value = " + value + ", result = " + result);
+		return result;
+	}
+
+	private int getIndexFromArray(String[] arrays, String value) {
+		if (arrays != null && arrays.length > 0) {
+			for (int i = 0; i < arrays.length; i++) {
+				Log.d(TAG, "getIndexFromArray arrays[i] = " + arrays[i] + ", value = " + value);
+				if (TextUtils.equals(value, arrays[i])) {
+					return i;
+				}
+			}
+		}
+		return 0;
+	}
+
+	public String switchTilteToKey(String title) {
+		String result = null;
+		if (title == null) {
+			return result;
+		}
+		switch (title) {
+			case CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_LNB_TYPE:
+				result = KEY_LNB_TYPE;
+				break;
+			case CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_UNICABLE_SWITCH:
+				result = KEY_UNICABLE_SWITCH;
+				break;
+			case CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_USER_BAND:
+				result = KEY_USER_BAND;
+				break;
+			case CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_UB_FREQUENCY:
+				result = KEY_UB_FREQUENCY;
+				break;
+			case CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM_POSITION:
+				result = KEY_POSITION;
+				break;
+		}
+        Log.d(TAG, "switchTilteToKey title = " + title + ", result = " + result);
+		return result;
+	}
+
+	public int getStrengthStatus() {
+		int result = 50;
+
+		return result;
+	}
+
+	public int getQualityStatus() {
+		int result = 50;
+
+		return result;
 	}
 }

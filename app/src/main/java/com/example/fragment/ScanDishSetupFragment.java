@@ -8,10 +8,15 @@ import com.example.fragment.ItemListView.ListItemSelectedListener;
 import com.example.fragment.ItemListView.ListSwitchedListener;
 import com.example.fragment.ItemListView.ListTypeSwitchedListener;
 import com.example.fragment.R.color;
+import com.example.fragment.dialog.CustomDialog;
+import com.example.fragment.dialog.DialogCallBack;
+import com.example.fragment.dialog.DialogManager;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -41,6 +46,7 @@ public class ScanDishSetupFragment extends Fragment {
 	private LinearLayout mSatelliteQuickkey2;
     private TextView mItemTitleTextView;
     private TextView mOptionTitleItemTextView;
+    private DialogManager mDialogManager = null;
 	
 	/*public static ScanDishSetupFragment newInstance() {
         return new ScanDishSetupFragment();
@@ -53,6 +59,7 @@ public class ScanDishSetupFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	Log.d(TAG, "onCreateView");
 		mParameterMananer = ((ScanMainActivity)getActivity()).getParameterMananer();
+		mDialogManager = ((ScanMainActivity)getActivity()).getDialogManager();
 		View rootView = inflater.inflate(R.layout.fragment_dish_setup, container, false);
 		mSatelliteQuickkey1 = (LinearLayout) rootView.findViewById(R.id.function_key1);
 		mSatelliteQuickkey2 = (LinearLayout) rootView.findViewById(R.id.function_key2);
@@ -179,7 +186,121 @@ public class ScanDishSetupFragment extends Fragment {
 		}
 		
 	};*/
-	
+
+	private CustomDialog mCurrentCustomDialog = null;
+	private CustomDialog mCurrentSubCustomDialog = null;
+	private DialogCallBack mSingleSelectDialogCallBack = new DialogCallBack() {
+		@Override
+		public void onStatusChange(View view, String parameterKey, Bundle data) {
+			Log.d(TAG, "onStatusChange parameterKey = " + parameterKey + ", data = " + data);
+			switch (parameterKey) {
+				case ParameterMananer.KEY_LNB_TYPE:
+					if (data != null && "selected".equals(data.getString("action"))) {
+						mParameterMananer.saveIntParameters(parameterKey, data.getInt("position"));
+						if (mCurrentCustomDialog != null && TextUtils.equals(parameterKey, mCurrentCustomDialog.getDialogKey())) {
+							mCurrentCustomDialog.updateListView(mCurrentCustomDialog.getDialogTitle(), mCurrentCustomDialog.getDialogKey(), data.getInt("position"));
+							mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatellite()));
+						}
+						if (data.getInt("position") == 2) {
+							mCurrentSubCustomDialog = mDialogManager.buildLnbCustomedItemDialog(mSingleSelectDialogCallBack);
+							if (mCurrentSubCustomDialog != null) {
+								mCurrentSubCustomDialog.showDialog();
+							}
+						}
+					}
+					break;
+				case ParameterMananer.KEY_LNB_CUSTOM:
+					if (data != null && "onClick".equals(data.getString("action"))) {
+						if ("ok".equals(data.getString("button"))) {
+							Log.d(TAG, "ok in clicked");
+							mParameterMananer.saveStringParameters(parameterKey, data.getString("value1") + "," + data.getString("value2"));
+						} else if ("cancel".equals(data.getString("button"))) {
+							Log.d(TAG, "cancel in clicked");
+						}
+					}
+					break;
+				case ParameterMananer.KEY_UNICABLE:
+					if (data != null && 0 == data.getInt("position") && ("left".equals(data.getString("action")) || "right".equals(data.getString("action")))) {
+						if ("left".equals(data.getString("action"))) {
+							Log.d(TAG, "unicable switch left in clicked");
+							mParameterMananer.saveIntParameters(ParameterMananer.KEY_UNICABLE_SWITCH, 0);
+						} else if ("right".equals(data.getString("action"))) {
+							Log.d(TAG, "unicable switch right in clicked");
+							mParameterMananer.saveIntParameters(ParameterMananer.KEY_UNICABLE_SWITCH, 1);
+						}
+						if (mCurrentCustomDialog != null) {
+							mCurrentCustomDialog.updateListView(mCurrentCustomDialog.getDialogTitle(), mCurrentCustomDialog.getDialogKey(), 0);
+						}
+					} else if ("selected".equals(data.getString("action")) && data != null && data.getInt("position") > 0 && data.getInt("position") < 4) {
+						int unicableSwitchPosition = data.getInt("position");
+						switch (unicableSwitchPosition) {
+							case 1:
+								mCurrentSubCustomDialog = mDialogManager.buildLnbCustomedItemDialog(mSingleSelectDialogCallBack);
+								if (mCurrentSubCustomDialog != null) {
+									mCurrentSubCustomDialog.showDialog();
+								}
+								break;
+							case 2:
+								mCurrentSubCustomDialog = mDialogManager.buildLnbCustomedItemDialog(mSingleSelectDialogCallBack);
+								if (mCurrentSubCustomDialog != null) {
+									mCurrentSubCustomDialog.showDialog();
+								}
+								break;
+							case 3:
+								mCurrentSubCustomDialog = mDialogManager.buildLnbCustomedItemDialog(mSingleSelectDialogCallBack);
+								if (mCurrentSubCustomDialog != null) {
+									mCurrentSubCustomDialog.showDialog();
+								}
+								break;
+							default:
+								break;
+						}
+					}
+
+					break;
+				case ParameterMananer.KEY_LNB_POWER:
+				case ParameterMananer.KEY_22_KHZ:
+				case ParameterMananer.KEY_TONE_BURST:
+				case ParameterMananer.KEY_DISEQC1_0:
+				case ParameterMananer.KEY_DISEQC1_1:
+				case ParameterMananer.KEY_MOTOR:
+					if (data != null && "selected".equals(data.getString("action"))) {
+						mParameterMananer.saveIntParameters(parameterKey, data.getInt("position"));
+						if (data.getInt("position") == 0 && mCurrentCustomDialog != null && TextUtils.equals(parameterKey, mCurrentCustomDialog.getDialogKey())) {
+							mCurrentCustomDialog.updateListView(mCurrentCustomDialog.getDialogTitle(), mCurrentCustomDialog.getDialogKey(), data.getInt("position"));
+							mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatellite()));
+						} else if (data.getInt("position") == 1 && mCurrentCustomDialog != null && TextUtils.equals(parameterKey, mCurrentCustomDialog.getDialogKey())){
+							mCurrentSubCustomDialog = mDialogManager.buildDiseqc1_2_ItemDialog(mSingleSelectDialogCallBack);
+							if (mCurrentSubCustomDialog != null) {
+								mCurrentSubCustomDialog.showDialog();
+							}
+						}
+					}
+					break;
+				case ParameterMananer.KEY_DISEQC1_2:
+					if (data != null && "selected".equals(data.getString("action"))) {
+						mParameterMananer.saveIntParameters(parameterKey, data.getInt("position"));
+
+					}
+					break;
+				case ParameterMananer.KEY_DISEQC1_2_DISH_LIMITS_STATUS:
+					if ("left".equals(data.getString("action"))) {
+						Log.d(TAG, "dish limits switch left in clicked");
+						mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_LIMITS_STATUS, 0);
+					} else if ("right".equals(data.getString("action"))) {
+						Log.d(TAG, "dish limits switch right in clicked");
+						mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_LIMITS_STATUS, 1);
+					}
+					if (mCurrentCustomDialog != null) {
+						mCurrentCustomDialog.updateListView(mCurrentCustomDialog.getDialogTitle(), mCurrentCustomDialog.getDialogKey(), 0);
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	};
+
 	ListItemSelectedListener mListItemSelectedListener = new ListItemSelectedListener() {
 
 		@Override
@@ -194,7 +315,62 @@ public class ScanDishSetupFragment extends Fragment {
 				}
 				mItemDetailItem.clear();
 				mItemAdapterItem.reFill(mParameterMananer.getItemList(listtype));
-            }
+            } else if (ItemListView.LIST_RIGHT.equals(mCurrentListFocus)) {
+			    if (position == 0 || position == 1) {
+			        Log.d(TAG, "satellite or transponder no sub menu");
+			        return;
+                }
+                mCurrentCustomDialog = mDialogManager.buildItemDialogById(position, mSingleSelectDialogCallBack);
+				if (mCurrentCustomDialog != null) {
+					mCurrentCustomDialog.showDialog();
+				}
+				/*int optionitemIndex = position;
+				AlertDialog singleSelectDialog = null;
+				switch (optionitemIndex) {
+					case 0:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_SATALLITE, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 1:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_TRANSPONDER, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 2:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_LNB_TYPE, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 3:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_UNICABLE, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 4:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_LNB_POWER, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 5:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_22_KHZ, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 6:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_TONE_BURST, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 7:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_DISEQC1_0, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 8:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_DISEQC1_1, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					case 9:
+						singleSelectDialog = mDialogManager.buildSelectSingleItemDialog(ParameterMananer.KEY_MOTOR, mSingleSelectDialogCallBack);
+						singleSelectDialog.show();
+						break;
+					default:
+						break;
+				}*/
+			}
 		}
 		
 	};

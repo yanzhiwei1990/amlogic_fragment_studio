@@ -93,10 +93,14 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
                 case KeyEvent.KEYCODE_DPAD_CENTER:
                 case KeyEvent.KEYCODE_NUMPAD_ENTER:
                 	if (isLeftList(mListType)) {
-                		if (mListItemSelectedListener != null) {
-                			mListItemSelectedListener.onListItemSelected(getSelectedItemPosition(), mListType);
-                		}
+                        if (mListItemSelectedListener != null) {
+                            mListItemSelectedListener.onListItemSelected(getSelectedItemPosition(), mListType);
+                        }
+                        return true;
                     } else if (isRightList(mListType)) {
+                        if (mListItemSelectedListener != null) {
+                            mListItemSelectedListener.onListItemSelected(getSelectedItemPosition(), mListType);
+                        }
                     	return true;
                     }
                 	return super.dispatchKeyEvent(event);
