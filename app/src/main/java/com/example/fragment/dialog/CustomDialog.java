@@ -338,6 +338,10 @@ public class CustomDialog extends AlertDialog {
         }
     }
 
+    public boolean isShowing() {
+        return mAlertDialog != null && mAlertDialog.isShowing();
+    }
+
     public void dismissDialog() {
         if (mAlertDialog != null && mAlertDialog.isShowing()) {
             mAlertDialog.dismiss();
@@ -495,19 +499,27 @@ public class CustomDialog extends AlertDialog {
     }
 
     public void initDiseqc1_2_ItemDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        mAlertDialog = builder.create();
-        mDialogView = View.inflate(mContext, R.layout.set_diseqc_1_2, null);
-        mDialogTitle = (TextView) mDialogView.findViewById(R.id.dialog_title);
-        mListView = (DialogItemListView) mDialogView.findViewById(R.id.switch_edit_item_list);
-        mStrengthProgressBar = (ProgressBar)mDialogView.findViewById(R.id.strength_progressbar);
-        mQualityProgressBar = (ProgressBar)mDialogView.findViewById(R.id.quality_progressbar);
-        mStrengthTextView = (TextView)mDialogView.findViewById(R.id.strength_percent);
-        mQualityTextView = (TextView)mDialogView.findViewById(R.id.quality_percent);
+        initDiseqc1_2_ItemDialog(true);
+    }
+
+    public void initDiseqc1_2_ItemDialog(boolean init) {
+        if (init) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            mAlertDialog = builder.create();
+            mDialogView = View.inflate(mContext, R.layout.set_diseqc_1_2, null);
+            mDialogTitle = (TextView) mDialogView.findViewById(R.id.dialog_title);
+            mListView = (DialogItemListView) mDialogView.findViewById(R.id.switch_edit_item_list);
+            mStrengthProgressBar = (ProgressBar)mDialogView.findViewById(R.id.strength_progressbar);
+            mQualityProgressBar = (ProgressBar)mDialogView.findViewById(R.id.quality_progressbar);
+            mStrengthTextView = (TextView)mDialogView.findViewById(R.id.strength_percent);
+            mQualityTextView = (TextView)mDialogView.findViewById(R.id.quality_percent);
+        }
+
         mStrengthProgressBar.setProgress(mParameterMananer.getStrengthStatus());
         mQualityProgressBar.setProgress(mParameterMananer.getQualityStatus());
         mStrengthTextView.setText(mParameterMananer.getStrengthStatus() + "%");
         mQualityTextView.setText(mParameterMananer.getQualityStatus() + "%");
+        mListView.setSelection(mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2));
 
         LinkedList<DialogItemAdapter.DialogItemDetail> itemlist = new LinkedList<DialogItemAdapter.DialogItemDetail>();
         DialogItemAdapter.DialogItemDetail item = null;
@@ -562,9 +574,16 @@ public class CustomDialog extends AlertDialog {
             }
         }
 
-        mItemAdapter = new DialogItemAdapter(itemlist, mContext);
-        mListView.setAdapter(mItemAdapter);
+        if (init) {
+            mItemAdapter = new DialogItemAdapter(itemlist, mContext);
+            mListView.setAdapter(mItemAdapter);
+        } else {
+            mItemAdapter.reFill(itemlist);
+        }
 
+        if (!init) {
+            return;
+        }
         mDialogTitle.setText(CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_MOTOR_LIST[1]);
         mDialogTitleText = CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM_MOTOR_LIST[1];
         mListView.setKey(ParameterMananer.KEY_DISEQC1_2);
@@ -617,6 +636,10 @@ public class CustomDialog extends AlertDialog {
         });
 
         mAlertDialog.setView(mDialogView);
+    }
+
+    public void updateDiseqc1_2_Dialog() {
+        initDiseqc1_2_ItemDialog(false);
     }
 
     public CustomDialog getDialog(String type) {

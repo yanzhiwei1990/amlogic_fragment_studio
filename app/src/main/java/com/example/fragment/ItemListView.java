@@ -21,7 +21,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 public class ItemListView extends ListView implements OnItemSelectedListener {
-    private static final String TAG = "GuideListView";
+    private static final String TAG = "ItemListView";
 
     public static final String ITEM_SATALLITE              = ParameterMananer.ITEM_SATALLITE;//"item_satallite";
     public static final String ITEM_TRANSPONDER            = ParameterMananer.ITEM_TRANSPONDER;//"item_tansponder";
@@ -36,6 +36,8 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     private ListItemFocusedListener mListItemFocusedListener;
     private ListSwitchedListener mListSwitchedListener;
     private ListTypeSwitchedListener mListTypeSwitchedListener;
+
+    private ParameterMananer mParameterMananer;
     
     public static final String LIST_LEFT = "left";
     public static final String LIST_RIGHT = "right";
@@ -45,12 +47,14 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
         mContext = context;
         setRootView();
         setOnItemSelectedListener(this);
+        mParameterMananer = new ParameterMananer(mContext);
     }
     public ItemListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         setRootView();
         setOnItemSelectedListener(this);
+        mParameterMananer = new ParameterMananer(mContext);
     }
 
     public boolean dispatchKeyEvent (KeyEvent event) {
@@ -66,12 +70,13 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
                     break;
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                     if (isLeftList(mListType)) {
-                        switchListType();
+                        switchListType(false);
                         if (mListTypeSwitchedListener != null) {
                             mListTypeSwitchedListener.onListTypeSwitched(mListType);
                         }
                         return true;
                     } else if (isRightList(mListType)) {
+                        //switchListType(true);
                     	if (mListSwitchedListener != null) {
                     		mListSwitchedListener.onListSwitched(LIST_LEFT);
                     	}
@@ -265,11 +270,15 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     	return false;
     }
 
-    private void switchListType() {
-        if (ITEM_SATALLITE.equals(mListType)) {
-            mListType = ITEM_TRANSPONDER;
+    private void switchListType(boolean isRight) {
+        if (!isRight) {
+            if (ITEM_SATALLITE.equals(mListType)) {
+                mListType = ITEM_TRANSPONDER;
+            } else {
+                mListType = ITEM_SATALLITE;
+            }
         } else {
-            mListType = ITEM_SATALLITE;
+            mListType = mParameterMananer.getCurrentListType();
         }
     }
 }

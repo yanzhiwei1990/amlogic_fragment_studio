@@ -38,7 +38,7 @@ public class ScanDishSetupFragment extends Fragment {
 	private ItemListView mListViewOption = null;
 	private LinkedList<ItemDetail> mItemDetailItem = new LinkedList<ItemDetail>();
 	private LinkedList<ItemDetail> mItemDetailOption = new LinkedList<ItemDetail>();
-	private String mCurrentListType = ParameterMananer.ITEM_SATALLITE;
+	private String mCurrentListType = ParameterMananer.KEY_SATALLITE;
 	private String mCurrentListFocus = ItemListView.LIST_LEFT;
 	private ParameterMananer mParameterMananer;
 	private LinearLayout mSatelliteQuickkey;
@@ -71,7 +71,7 @@ public class ScanDishSetupFragment extends Fragment {
 		mItemDetailItem.addAll(mParameterMananer.getItemList(mParameterMananer.getCurrentListType()));
 		mItemAdapterItem = new ItemAdapter(mItemDetailItem, getActivity());
 		mListViewItem.setAdapter(mItemAdapterItem);
-		mListViewItem.setTag(mParameterMananer.getCurrentListType()/*ParameterMananer.ITEM_SATALLITE*/);
+		mListViewItem.setTag(/*mParameterMananer.getCurrentListType()*/ParameterMananer.ITEM_SATALLITE);
 
 		mItemTitleTextView = (TextView) rootView.findViewById(R.id.listview_item_title);
         mItemTitleTextView.setText(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? R.string.list_type_satellite : R.string.list_type_transponder);
@@ -81,16 +81,16 @@ public class ScanDishSetupFragment extends Fragment {
 		mListViewItem.setListItemFocusedListener(mListItemFocusedListener);
 		mListViewItem.setListSwitchedListener(mListSwitchedListener);
 		mListViewItem.setListTypeSwitchedListener(mListTypeSwitchedListener);
-		mListViewItem.setListType(mParameterMananer.getCurrentListType()/*ItemListView.ITEM_SATALLITE*/);
+		mListViewItem.setListType(/*mParameterMananer.getCurrentListType()*/ItemListView.ITEM_SATALLITE);
 		
-		mItemDetailOption.addAll(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatellite()));
+		mItemDetailOption.addAll(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatelliteIndex()));
 		mItemAdapterOption = new ItemAdapter(mItemDetailOption, getActivity());
 		mListViewOption.setAdapter(mItemAdapterOption);
 		mListViewItem.setTag(ParameterMananer.ITEM_SATALLITE_OPTION);
-		mListViewItem.setSelection(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatellite() : mParameterMananer.getCurrentTransponder());
+		mListViewItem.setSelection(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex());
 
 		mOptionTitleItemTextView = (TextView) rootView.findViewById(R.id.listview_option_title);
-        mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatellite() : mParameterMananer.getCurrentTransponder())/*"Ku_NewSat2"*/);
+        mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex())/*"Ku_NewSat2"*/);
 
 		//mListViewOption.setSelectionAfterHeaderView();
 		mListViewOption.setListItemSelectedListener(mListItemSelectedListener);
@@ -199,7 +199,7 @@ public class ScanDishSetupFragment extends Fragment {
 						mParameterMananer.saveIntParameters(parameterKey, data.getInt("position"));
 						if (mCurrentCustomDialog != null && TextUtils.equals(parameterKey, mCurrentCustomDialog.getDialogKey())) {
 							mCurrentCustomDialog.updateListView(mCurrentCustomDialog.getDialogTitle(), mCurrentCustomDialog.getDialogKey(), data.getInt("position"));
-							mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatellite()));
+							mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatelliteIndex()));
 						}
 						if (data.getInt("position") == 2) {
 							mCurrentSubCustomDialog = mDialogManager.buildLnbCustomedItemDialog(mSingleSelectDialogCallBack);
@@ -268,8 +268,9 @@ public class ScanDishSetupFragment extends Fragment {
 						mParameterMananer.saveIntParameters(parameterKey, data.getInt("position"));
 						if (data.getInt("position") == 0 && mCurrentCustomDialog != null && TextUtils.equals(parameterKey, mCurrentCustomDialog.getDialogKey())) {
 							mCurrentCustomDialog.updateListView(mCurrentCustomDialog.getDialogTitle(), mCurrentCustomDialog.getDialogKey(), data.getInt("position"));
-							mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatellite()));
+							//mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatellite()));
 						} else if (data.getInt("position") == 1 && mCurrentCustomDialog != null && TextUtils.equals(parameterKey, mCurrentCustomDialog.getDialogKey())){
+							mCurrentCustomDialog.updateListView(mCurrentCustomDialog.getDialogTitle(), mCurrentCustomDialog.getDialogKey(), data.getInt("position"));
 							mCurrentSubCustomDialog = mDialogManager.buildDiseqc1_2_ItemDialog(mSingleSelectDialogCallBack);
 							if (mCurrentSubCustomDialog != null) {
 								mCurrentSubCustomDialog.showDialog();
@@ -278,21 +279,113 @@ public class ScanDishSetupFragment extends Fragment {
 					}
 					break;
 				case ParameterMananer.KEY_DISEQC1_2:
-					if (data != null && "selected".equals(data.getString("action"))) {
+					if (data != null) {
 						mParameterMananer.saveIntParameters(parameterKey, data.getInt("position"));
-
 					}
-					break;
-				case ParameterMananer.KEY_DISEQC1_2_DISH_LIMITS_STATUS:
-					if ("left".equals(data.getString("action"))) {
-						Log.d(TAG, "dish limits switch left in clicked");
-						mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_LIMITS_STATUS, 0);
-					} else if ("right".equals(data.getString("action"))) {
-						Log.d(TAG, "dish limits switch right in clicked");
-						mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_LIMITS_STATUS, 1);
-					}
-					if (mCurrentCustomDialog != null) {
-						mCurrentCustomDialog.updateListView(mCurrentCustomDialog.getDialogTitle(), mCurrentCustomDialog.getDialogKey(), 0);
+					if (data != null && "selected".equals(data.getString("action"))) {
+						int diseqc1_2_position = data.getInt("position");
+						mParameterMananer.saveIntParameters(parameterKey, diseqc1_2_position);
+						boolean needbreak = false;
+						switch (diseqc1_2_position) {
+							case 7://move
+								mParameterMananer.dishMove(mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_MOVE_DIRECTION), mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_MOVE_STEP));
+								break;
+							case 9://save to position
+								mParameterMananer.storeDishPosition(mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_CURRENT_POSITION));
+								break;
+							case 10://move to position
+								mParameterMananer.moveDishToPosition(mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_CURRENT_POSITION));
+								break;
+							default:
+								needbreak = true;
+								break;
+						}
+						if (!needbreak && mCurrentSubCustomDialog != null && mCurrentSubCustomDialog.isShowing()) {
+							mCurrentSubCustomDialog.updateDiseqc1_2_Dialog();
+						} else {
+							Log.d(TAG, "mCurrentSubCustomDialog null or need break or not displayed");
+						}
+					} else if (data != null && ("left".equals(data.getString("action")) || "right".equals(data.getString("action")))) {
+						int position = data.getInt("position");
+						boolean needbreak = false;
+						switch (position) {
+							case 2://dish limts status
+								mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_LIMITS_STATUS, "left".equals(data.getString("action")) ? 0 : 1);
+								break;
+							case 3://dish limts east
+								int value = mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_EAST_LIMITS);
+								if ("left".equals(data.getString("action"))) {
+									if (value != 0) {
+										value = value - 1;
+									}
+								} else {
+									if (value != 180) {
+										value = value + 1;
+									}
+								}
+								mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_EAST_LIMITS, value);
+								break;
+							case 4://dish limts west
+								int westvalue = mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_WEST_LIMITS);
+								if ("left".equals(data.getString("action"))) {
+									if (westvalue != 0) {
+										westvalue = westvalue - 1;
+									}
+								} else {
+									if (westvalue != 180) {
+										westvalue = westvalue + 1;
+									}
+								}
+								mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_WEST_LIMITS, westvalue);
+								break;
+							case 5://dish moce direction
+								int directionvalue = mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_MOVE_DIRECTION);
+								if ("left".equals(data.getString("action"))) {
+									if (directionvalue != 0) {
+										directionvalue = directionvalue - 1;
+									}
+								} else {
+									if (directionvalue != 2) {
+										directionvalue = directionvalue + 1;
+									}
+								}
+								mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_MOVE_DIRECTION, directionvalue);
+								break;
+							case 6://dish moce step
+								int stepvalue = mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_MOVE_STEP);
+								if ("left".equals(data.getString("action"))) {
+									if (stepvalue != 0) {
+										stepvalue = stepvalue - 1;
+									}
+								} else {
+									if (stepvalue != 180) {
+										stepvalue = stepvalue + 1;
+									}
+								}
+								mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_MOVE_STEP, stepvalue);
+								break;
+							case 8://dish position
+								int positionvalue = mParameterMananer.getIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_CURRENT_POSITION);
+								if ("left".equals(data.getString("action"))) {
+									if (positionvalue != 0) {
+										positionvalue = positionvalue - 1;
+									}
+								} else {
+									if (positionvalue != 255) {
+										positionvalue = positionvalue + 1;
+									}
+								}
+								mParameterMananer.saveIntParameters(ParameterMananer.KEY_DISEQC1_2_DISH_CURRENT_POSITION, positionvalue);
+								break;
+							default:
+								needbreak = true;
+								break;
+						}
+						if (!needbreak && mCurrentSubCustomDialog != null && mCurrentSubCustomDialog.isShowing()) {
+							mCurrentSubCustomDialog.updateDiseqc1_2_Dialog();
+						} else {
+							Log.d(TAG, "mCurrentSubCustomDialog null or need break or not displayed");
+						}
 					}
 					break;
 				default:
@@ -309,9 +402,11 @@ public class ScanDishSetupFragment extends Fragment {
 			if (ItemListView.LIST_LEFT.equals(mCurrentListFocus)) {
 				String listtype = mParameterMananer.getCurrentListType();
 				if (ParameterMananer.ITEM_SATALLITE.equals(listtype)) {
-					mParameterMananer.setCurrentSatellite(position);
+					LinkedList<ItemDetail> items = mParameterMananer.getSatelliteList();
+					mParameterMananer.setCurrentSatellite(items != null ? items.get(position).getFirstText() : "null");
 				} else if (ParameterMananer.ITEM_TRANSPONDER.equals(listtype)) {
-					mParameterMananer.setCurrentTransponder(position);
+                    LinkedList<ItemDetail> items = mParameterMananer.getTransponderList();
+					mParameterMananer.setCurrentTransponder(items != null ? (items.get(position).getFirstText()) : "null");
 				}
 				mItemDetailItem.clear();
 				mItemAdapterItem.reFill(mParameterMananer.getItemList(listtype));
@@ -380,15 +475,15 @@ public class ScanDishSetupFragment extends Fragment {
 		@Override
 		public void onListItemFocused(View parent, int position, String type) {
 			Log.d(TAG, "onListItemFocused position = " + position + ", type = " + type);
-			if (ItemListView.LIST_LEFT.equals(mCurrentListFocus) && ItemListView.isRightList(type)) {
+			/*if (ItemListView.LIST_LEFT.equals(mCurrentListFocus) && ItemListView.isRightList(type)) {
             	mListViewOption.cleanChoosed();
-            }
+            }*/
 			if (ItemListView.LIST_LEFT.equals(mCurrentListFocus)) {
-				mItemDetailOption.clear();
+				/*mItemDetailOption.clear();
 				mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(type, position));
 				if (mItemAdapterOption.getCount() > 0) {
 					mListViewOption.setSelection(0);
-				}
+				}*/
 				mListViewOption.cleanChoosed();
             } else if (ItemListView.LIST_RIGHT.equals(mCurrentListFocus)) {
             	mListViewItem.cleanChoosed();
@@ -417,9 +512,9 @@ public class ScanDishSetupFragment extends Fragment {
 				creatSatelliteandScan2();
             }
 			if (ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType)) {
-				mListViewItem.setSelection(mParameterMananer.getCurrentSatellite());
-			} else {
-				mListViewItem.setSelection(mParameterMananer.getCurrentTransponder());
+				mListViewItem.setSelection(mParameterMananer.getCurrentSatelliteIndex());
+			} else if (ParameterMananer.ITEM_TRANSPONDER.equals(mCurrentListType)) {
+				mListViewItem.setSelection(mParameterMananer.getCurrentTransponderIndex());
 			}
 		}
 		
@@ -433,15 +528,15 @@ public class ScanDishSetupFragment extends Fragment {
 			mListViewItem.cleanChoosed();
 			mItemAdapterItem.reFill(mParameterMananer.getItemList(mParameterMananer.getCurrentListType()));
 			if (ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType)) {
-				mListViewItem.setSelection(mParameterMananer.getCurrentSatellite());
+				mListViewItem.setSelection(mParameterMananer.getCurrentSatelliteIndex());
 			} else {
-				mListViewItem.setSelection(mParameterMananer.getCurrentTransponder());
+				mListViewItem.setSelection(mParameterMananer.getCurrentTransponderIndex());
 			}
 			mListViewItem.requestFocus();
             mItemTitleTextView.setText(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? R.string.list_type_satellite : R.string.list_type_transponder);
-			mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType) ? mParameterMananer.getCurrentSatellite() : mParameterMananer.getCurrentTransponder()));
+			mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex()));
 			mListViewOption.cleanChoosed();
-            mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatellite() : mParameterMananer.getCurrentTransponder())/*"Ku_NewSat2"*/);
+            mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_TRANSPONDER.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex())/*"Ku_NewSat2"*/);
 		}
 	};
 	

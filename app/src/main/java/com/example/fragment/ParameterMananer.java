@@ -1,6 +1,7 @@
 package com.example.fragment;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class ParameterMananer {
 
 	public static final String KEY_SATALLITE = "key_satallite";
 	public static final String KEY_TRANSPONDER = "key_transponder";
+	public static final String KEY_CURRENT_TYPE = "key_current_type";
 	public static final String KEY_LNB_TYPE = "key_lnb_type";
 	//unicable
 	public static final String KEY_UNICABLE = "key_unicable";
@@ -105,94 +107,135 @@ public class ParameterMananer {
 		if (all == null) {
 			return list;
 		}
-		int current = getCurrentSatellite();
+		String current = getCurrentSatellite();
 		int type = 0;
 		for (int i = 0; i < all.length; i++) {
-			if (current == i) {
+			if (all[i].equals(current)) {
 				type = ItemDetail.SELECT_EDIT;
 			} else {
 				type = ItemDetail.NOT_SELECT_EDIT;
 			}
-			list.add(new ItemDetail(type, all[i], null));
+			list.add(new ItemDetail(type, all[i], null, true));
 		}
 
 		return list;
 	}
 	
-	private int mCurrentSatellite = -1;
-	private String mCurrentListType = null;
+	//private int mCurrentSatellite = -1;
+	//private String mCurrentListType = null;
 	private final String[] ALL_SATALLITE = {"001 013.OE Ku_HOTBIRD 6", "002 013.OE Ku_HOTBIRD 6", "003 013.OE Ku_HOTBIRD 6",
 			                                "004 013.OE Ku_HOTBIRD 6", "005 013.OE Ku_HOTBIRD 6", "006 013.OE Ku_HOTBIRD 6",
 			                                "007 013.OE Ku_HOTBIRD 6"};
 	private int mCurrentTransponder = -1;
-	private final String[] ALL_TRANSPONDER = {"001 10723 H 29900008", "001 10723 H 29900008", "001 10723 H 29900008",
-			                                  "001 10723 H 29900008", "001 10723 H 29900008", "001 10723 H 29900008",
-			                                  "001 10723 H 29900008"};
+	private final String[] ALL_TRANSPONDER = {"001 10723 H 29900008", "002 10723 H 29900008", "003 10723 H 29900008",
+			                                  "004 10723 H 29900008", "005 10723 H 29900008", "006 10723 H 29900008",
+			                                  "007 10723 H 29900008"};
 	
-	public int getCurrentSatellite() {
-		if (mCurrentSatellite == -1) {
+	public String getCurrentSatellite() {
+		/*if (mCurrentSatellite == -1) {
 			mCurrentSatellite = getIntParameters(SAVE_SATELITE_POSITION);
 			if (mCurrentSatellite == -1) {
 				saveIntParameters(SAVE_SATELITE_POSITION, 0);
 				mCurrentSatellite = 0;
 			}
 		}
-		return mCurrentSatellite;
+		return mCurrentSatellite;*/
+		return getStringParameters(KEY_SATALLITE);
 	}
-	
-	public void setCurrentSatellite(int position) {
-		mCurrentSatellite = position;
-		saveIntParameters(SAVE_SATELITE_POSITION, position);
+
+	public int getCurrentSatelliteIndex() {
+		LinkedList<ItemDetail> items = getSatelliteList();
+		String current = getCurrentSatellite();
+		Iterator iterator = null;//items.iterator();
+		int i = -1;
+		boolean found = false;
+		if (items != null && items.size() > 0) {
+			iterator = items.iterator();
+			if (iterator != null) {
+				while (iterator.hasNext()) {
+					i++;
+					String value = ((ItemDetail)iterator.next()).getFirstText();
+					if (TextUtils.equals(current, value)) {
+						found = true;
+						return i;
+					}
+				}
+			}
+		}
+		Log.d(TAG, "getCurrentSatelliteIndex can match value");
+		return 0;
+	}
+
+	public void setCurrentSatellite(String satellite) {
+		/*mCurrentSatellite = position;
+		saveIntParameters(SAVE_SATELITE_POSITION, position);*/
+		saveStringParameters(KEY_SATALLITE, satellite);
 	}
 	
 	public String getCurrentListType() {
-		if (mCurrentListType == null) {
-			mCurrentListType = getStringParameters(SAVE_CURRENT_LIST_TYPE);
-			if (mCurrentListType == null) {
-				saveStringParameters(SAVE_CURRENT_LIST_TYPE, ITEM_SATALLITE);
-				mCurrentListType = ITEM_SATALLITE;
-			}
-		}
-		return mCurrentListType;
+		return getStringParameters(KEY_CURRENT_TYPE);
 	}
 	
 	public void setCurrentListType(String type) {
-		mCurrentListType = type;
-		saveStringParameters(SAVE_CURRENT_LIST_TYPE, type);
+		saveStringParameters(KEY_CURRENT_TYPE, type);
 	}
 	
-	public int getCurrentTransponder() {
+	public String getCurrentTransponder() {
 		//return getIntParameters(SAVE_TRANSPONDER_POSITION);
-		if (mCurrentTransponder == -1) {
+		/*if (mCurrentTransponder == -1) {
 			mCurrentTransponder = getIntParameters(SAVE_TRANSPONDER_POSITION);
 			if (mCurrentTransponder == -1) {
 				saveIntParameters(SAVE_TRANSPONDER_POSITION, 0);
 				mCurrentTransponder = 0;
 			}
+		}*/
+		return getStringParameters(KEY_TRANSPONDER);
+	}
+	
+	public void setCurrentTransponder(String value) {
+		//mCurrentTransponder = position;
+		//saveIntParameters(SAVE_TRANSPONDER_POSITION, position);
+		saveStringParameters(KEY_TRANSPONDER, value);
+	}
+
+	public int getCurrentTransponderIndex() {
+		LinkedList<ItemDetail> items = getTransponderList();
+		String current = getCurrentTransponder();
+		Iterator iterator = null;//items.iterator();
+		int i = -1;
+		boolean found = false;
+		if (items != null && items.size() > 0) {
+			iterator = items.iterator();
+			if (iterator != null) {
+				while (iterator.hasNext()) {
+					i++;
+					String value = ((ItemDetail)iterator.next()).getFirstText();
+					if (TextUtils.equals(current, value)) {
+						found = true;
+						return i;
+					}
+				}
+			}
 		}
-		return mCurrentTransponder;
+		Log.d(TAG, "getCurrentTransponderIndex can match value");
+		return 0;
 	}
-	
-	public void setCurrentTransponder(int position) {
-		mCurrentTransponder = position;
-		saveIntParameters(SAVE_TRANSPONDER_POSITION, position);
-	}
-	
+
 	public LinkedList<ItemDetail> getTransponderList() {
 		LinkedList<ItemDetail> list = new LinkedList<ItemDetail>();
 		String[] all = ALL_TRANSPONDER;
 		if (all == null) {
 			return null;
 		}
-		int current = getCurrentTransponder();
+		String current = getCurrentTransponder();
 		int type = 0;
 		for (int i = 0; i < all.length; i++) {
-			if (current == i) {
+			if (all[i].equals(current)) {
 				type = ItemDetail.SELECT_EDIT;
 			} else {
 				type = ItemDetail.NOT_SELECT_EDIT;
 			}
-			list.add(new ItemDetail(type, all[i], null));
+			list.add(new ItemDetail(type, all[i], null, true));
 		}
 
 		return list;
@@ -204,7 +247,7 @@ public class ParameterMananer {
 		} else if (ITEM_TRANSPONDER.equals(type)) {
 			return getTransponderList();
 		} else {
-			return new LinkedList<ItemDetail>();
+			return getSatelliteList();
 		}
 	}
 
@@ -212,9 +255,9 @@ public class ParameterMananer {
 		String title = null;
 		//need to add get function, debug as below
 		title = "Ku_HOTBIRO6,7A,8";
-		if (ITEM_SATALLITE.equals(type)) {
+		if (KEY_SATALLITE.equals(type)) {
 			title = "Ku_NewSat2";
-		} else if (ITEM_TRANSPONDER.equals(type)) {
+		} else if (KEY_TRANSPONDER.equals(type)) {
 			title = "Ku_HOTBIRO6,7A,8";
 		} else {
 			return "";
@@ -297,8 +340,12 @@ public class ParameterMananer {
 
 		int size = parametertype.size();
 		for (int i = 0; i < parametertype.size(); i++) {
-			Log.d(TAG, "");
-			list.add(new ItemDetail(ItemDetail.NONE_EDIT, parametertype.get(i), parametervalue.get(i)));
+			Log.d(TAG, "parametertype " + parametertype.get(i) + ", parametervalue = " + parametervalue.get(i));
+			if (i == 0 || i ==1) {
+				list.add(new ItemDetail(ItemDetail.NONE_EDIT, parametertype.get(i), parametervalue.get(i), false));
+			} else {
+				list.add(new ItemDetail(ItemDetail.SWITCH_EDIT, parametertype.get(i), parametervalue.get(i), false));
+			}
 		}
 
 		return list;
@@ -389,11 +436,14 @@ public class ParameterMananer {
 			return null;
 		}
 		switch (key) {
+			case KEY_CURRENT_TYPE:
+				defValue = ITEM_SATALLITE;
+				break;
 			case KEY_SATALLITE:
-				defValue = KEY_SATALLITE_DEFAULT_VALUE;
+				defValue = ALL_SATALLITE[0];//KEY_SATALLITE_DEFAULT_VALUE;
 				break;
 			case KEY_TRANSPONDER:
-				defValue = KEY_TRANSPONDER_DEFAULT_VALUE;
+				defValue = ALL_TRANSPONDER[0];//KEY_TRANSPONDER_DEFAULT_VALUE;
 				break;
 			case KEY_LNB_TYPE:
 				defValue = KEY_LNB_TYPE_DEFAULT_VALUE;
@@ -543,5 +593,31 @@ public class ParameterMananer {
 		int result = 50;
 
 		return result;
+	}
+
+	public void dishMove(int direction, int step) {
+		String derection = null;
+		switch (direction) {
+			case 0:
+				derection = "east";
+				break;
+			case 2:
+				derection = "west";
+				break;
+			case 3:
+				derection = "center";
+				break;
+		}
+		Log.d(TAG, "dishMove need add function " + derection + "->" + step);
+	}
+
+	public void storeDishPosition(int position) {
+
+		Log.d(TAG, "storeDishPosition need add function " + position + "->" + position);
+	}
+
+	public void moveDishToPosition(int position) {
+
+		Log.d(TAG, "moveDishToPosition need add function " + position + "->" + position);
 	}
 }

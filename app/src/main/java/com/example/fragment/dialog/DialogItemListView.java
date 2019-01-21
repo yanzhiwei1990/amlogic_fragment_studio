@@ -66,30 +66,30 @@ public class DialogItemListView extends ListView implements OnItemSelectedListen
                     break;
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
-                    if (ParameterMananer.KEY_UNICABLE.equals(getKey())) {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("action", event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT ? "left" : "right");
-                        bundle.putInt("position", getSelectedItemPosition());
-                        bundle.putString("title", mTitle);
-                        bundle.putString("key", mKey);
-                        mDialogCallBack.onStatusChange(getSelectedView(), mKey, bundle);
+                    //if (ParameterMananer.KEY_UNICABLE.equals(getKey())) {
+                        Bundle bundle1 = new Bundle();
+                        bundle1.putString("action", event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT ? "left" : "right");
+                        bundle1.putInt("position", getSelectedItemPosition());
+                        bundle1.putString("title", mTitle);
+                        bundle1.putString("key", mKey);
+                        mDialogCallBack.onStatusChange(getSelectedView(), mKey, bundle1);
                         return true;
-                    }
-                    return super.dispatchKeyEvent(event);
+                    //}
+                    //return super.dispatchKeyEvent(event);
                 case KeyEvent.KEYCODE_DPAD_CENTER:
                 case KeyEvent.KEYCODE_NUMPAD_ENTER:
                     if (mDialogCallBack != null) {
                         int position = getSelectedItemPosition();
-                        if ((ParameterMananer.KEY_SATALLITE.equals(getKey()) && position == 0) || (ParameterMananer.KEY_TRANSPONDER.equals(getKey()) && position == 1)) {
+                        /*if ((ParameterMananer.KEY_SATALLITE.equals(getKey()) && position == 0) || (ParameterMananer.KEY_TRANSPONDER.equals(getKey()) && position == 1)) {
                             Log.d(TAG, "satellite or transponder no response");
                             return true;
-                        }
-                        Bundle bundle = new Bundle();
-                        bundle.putString("action", "selected");
-                        bundle.putInt("position", position);
-                        bundle.putString("title", mTitle);
-                        bundle.putString("key", mKey);
-                        mDialogCallBack.onStatusChange(getSelectedView(), mKey, bundle);
+                        }*/
+                        Bundle bundle2 = new Bundle();
+                        bundle2.putString("action", "selected");
+                        bundle2.putInt("position", position);
+                        bundle2.putString("title", mTitle);
+                        bundle2.putString("key", mKey);
+                        mDialogCallBack.onStatusChange(getSelectedView(), mKey, bundle2);
                     }
                     return true;
             }
