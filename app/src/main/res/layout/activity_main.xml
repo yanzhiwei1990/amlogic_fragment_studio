@@ -4,6 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/common_background"
-    tools:context="com.example.fragment.ScanMainActivity"
+    tools:context="com.droidlogic.fragment.ScanMainActivity"
     tools:ignore="MergeRootFrame" />
 

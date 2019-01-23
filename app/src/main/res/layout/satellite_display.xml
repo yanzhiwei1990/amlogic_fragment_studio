@@ -16,7 +16,7 @@
         android:background="@drawable/ring_white"
         android:gravity="center_vertical|center_horizontal"
         android:lines="2"
-        android:text="GO\nTO"
+        android:text="left"
         android:textColor="@color/common_white"
         android:textSize="11sp" />
 
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical|center_horizontal"
         android:paddingRight="20dp"
-        android:text="SATALLITE"
+        android:text="SAT/TRAN"
         android:textColor="#B3EEEEEE"
         android:textSize="14sp" />
 </LinearLayout>

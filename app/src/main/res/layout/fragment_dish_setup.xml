@@ -53,7 +53,7 @@
                 android:textColor="@color/common_text_color"
                 android:textSize="14sp" />
 
-            <com.example.fragment.ItemListView
+            <com.droidlogic.fragment.ItemListView
                 android:id="@+id/listview_item"
                 android:layout_width="350dp"
                 android:layout_height="360dp"
@@ -84,7 +84,7 @@
                 android:textColor="@color/common_text_color"
                 android:textSize="14sp" />
 
-            <com.example.fragment.ItemListView
+            <com.droidlogic.fragment.ItemListView
                 android:id="@+id/listview_option"
                 android:layout_width="400dp"
                 android:layout_height="360dp"

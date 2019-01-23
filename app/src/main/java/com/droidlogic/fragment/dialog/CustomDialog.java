@@ -1,4 +1,4 @@
-package com.example.fragment.dialog;
+package com.droidlogic.fragment.dialog;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,14 +14,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.fragment.ParameterMananer;
-import com.example.fragment.R;
+import com.droidlogic.fragment.ParameterMananer;
+import com.droidlogic.fragment.R;
 
 import java.util.LinkedList;
 
-public class CustomDialog extends AlertDialog {
+public class CustomDialog/* extends AlertDialog*/ {
 
     private static final String TAG = "CustomDialog";
     private String mDialogType;
@@ -40,6 +41,7 @@ public class CustomDialog extends AlertDialog {
     private TextView mQualityTextView = null;
     private LinkedList<DialogItemAdapter.DialogItemDetail> mItemList = new LinkedList<DialogItemAdapter.DialogItemDetail>();
     private DialogItemAdapter mItemAdapter = null;
+    private String mSpinnerValue = null;
 
     public static final String DIALOG_SAVING = "saving";
     public static final String DIALOG_ADD_TRANSPONDER = "add_transponder";
@@ -112,7 +114,7 @@ public class CustomDialog extends AlertDialog {
     public static final String[] DIALOG_SET_EDIT_SWITCH_ITEM_UNICABLE_POSITION_LIST = {"off", "on"};
 
     public CustomDialog(Context context, String type, DialogCallBack callback, ParameterMananer mananer) {
-        super(context);
+        //super(context);
         this.mContext = context;
         this.mDialogType = type;
         this.mDialogCallBack = callback;
@@ -153,10 +155,10 @@ public class CustomDialog extends AlertDialog {
         void onStatusChange(View view, String dialogtype, Bundle data);
     }
 
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    /*public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         return super.onKeyDown(keyCode, event);
-    }
+    }*/
 
     public String getDialogType() {
         return mDialogType;
@@ -427,7 +429,7 @@ public class CustomDialog extends AlertDialog {
                 }
             }
         });
-        mAlertDialog.setOnDismissListener(new OnDismissListener() {
+        mAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 if (mDialogCallBack != null) {
@@ -623,7 +625,7 @@ public class CustomDialog extends AlertDialog {
                 }
             }
         });
-        mAlertDialog.setOnDismissListener(new OnDismissListener() {
+        mAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 if (mDialogCallBack != null) {
@@ -642,12 +644,12 @@ public class CustomDialog extends AlertDialog {
         initDiseqc1_2_ItemDialog(false);
     }
 
-    public CustomDialog getDialog(String type) {
+    /*public CustomDialog getDialog(String type) {
         switch (type) {
             case DIALOG_SAVING:
                 return creatSavingDialog();
             case DIALOG_ADD_TRANSPONDER:
-                return creatAddTransponderDialog();
+                return initAddTransponderDialog();
             case DIALOG_EDIT_TRANSPONDER:
                 return creatEditTransponderDialog();
             case DIALOG_ADD_SATELLITE:
@@ -655,22 +657,351 @@ public class CustomDialog extends AlertDialog {
             case DIALOG_EDIT_SATELLITE:
                 return creatEditSatelliteDialog();
             case DIALOG_CONFIRM:
-                return creatConfirmDialog();
+                //return creatConfirmDialog();
             default:
                 Log.w(TAG, "getCustomDialog not exist!");
                 return null;
         }
-    }
+    }*/
 
     public CustomDialog creatSavingDialog() {
-        setContentView(R.layout.saving);
+        //setContentView(R.layout.saving);
         return this;
     }
 
-    public CustomDialog creatAddTransponderDialog() {
-        //setTitle(R.string.add);
+    public void initAddSatelliteDialog(final String name) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        mAlertDialog = builder.create();
+        mDialogView = View.inflate(mContext, R.layout.add_satellite, null);
+        mDialogTitle = (TextView) mDialogView.findViewById(R.id.dialog_title);
+        if (name != null) {
+            mDialogTitle.setText(R.string.dialog_edit_satellite);
+        } else {
+            mDialogTitle.setText(R.string.dialog_add_satellite);
+        }
+        mSpinnerValue = "";
 
-        return this;
+        final EditText satellite = (EditText)mDialogView.findViewById(R.id.edittext_satellite);
+        final Spinner spinner = (Spinner)mDialogView.findViewById(R.id.spinner_direction);
+        final EditText longitude = (EditText)mDialogView.findViewById(R.id.edittext_longitude);
+        if (name != null) {
+            String satellitename1 = mParameterMananer.getSatelliteName(name);
+            String direction1 = mParameterMananer.getSatelliteDirection(name);
+            String longitude1 = mParameterMananer.getSatelliteLongitude(name);
+            satellite.setHint(satellitename1);
+            mSpinnerValue = direction1;
+            spinner.setSelection("east".equals(direction1) ? 0 : 1);
+            longitude.setHint(longitude1);
+        }
+        final Button ok = (Button) mDialogView.findViewById(R.id.button1);
+        final Button cancel = (Button) mDialogView.findViewById(R.id.button2);
+        final String[] SPINNER_VALUES = {"east", "west"};
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mSpinnerValue = SPINNER_VALUES[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        ok.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onClick");
+                    bundle.putString("key", ParameterMananer.KEY_ADD_TRANSPONDER);
+                    bundle.putString("button", "ok");
+                    bundle.putString("value1", satellite.getText() != null ? satellite.getText().toString() : (satellite.getHint() != null ? satellite.getHint().toString() : ""));
+                    bundle.putString("value2", mSpinnerValue != null ? mSpinnerValue : "");
+                    bundle.putString("value3", longitude.getText() != null ? longitude.getText().toString() : (longitude.getHint() != null ? longitude.getHint().toString() : ""));
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_ADD_TRANSPONDER, bundle);
+                    if (mAlertDialog != null) {
+                        mAlertDialog.dismiss();
+                    }
+                }
+            }
+        });
+        cancel.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onClick");
+                    bundle.putString("key", ParameterMananer.KEY_ADD_TRANSPONDER);
+                    bundle.putString("button", "cancel");
+                    bundle.putString("value1", satellite.getText() != null ? satellite.getText().toString() : (satellite.getHint() != null ? satellite.getHint().toString() : ""));
+                    bundle.putString("value2", mSpinnerValue != null ? mSpinnerValue : "");
+                    bundle.putString("value3", longitude.getText() != null ? longitude.getText().toString() : (longitude.getHint() != null ? longitude.getHint().toString() : ""));
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_ADD_TRANSPONDER, bundle);
+                    if (mAlertDialog != null) {
+                        mAlertDialog.dismiss();
+                    }
+                }
+            }
+        });
+        mAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onDismiss");
+                    bundle.putString("key", ParameterMananer.KEY_ADD_TRANSPONDER);
+                    bundle.putString("button", "unkown");
+                    bundle.putString("value1", satellite.getText() != null ? satellite.getText().toString() : "");
+                    bundle.putString("value2", mSpinnerValue != null ? mSpinnerValue : "");
+                    bundle.putString("value3", longitude.getText() != null ? longitude.getText().toString() : "");
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_ADD_TRANSPONDER, bundle);
+                }
+            }
+        });
+
+        mAlertDialog.setView(mDialogView);
+    }
+
+    public void initRemoveSatelliteDialog(final String name) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        mAlertDialog = builder.create();
+        mDialogView = View.inflate(mContext, R.layout.remove_satellite, null);
+        mDialogTitle = (TextView) mDialogView.findViewById(R.id.dialog_title);
+        mDialogTitle.setText(R.string.dialog_remove_satellite);
+
+        final Button ok = (Button) mDialogView.findViewById(R.id.button1);
+        final Button cancel = (Button) mDialogView.findViewById(R.id.button2);
+
+        ok.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onClick");
+                    bundle.putString("key", ParameterMananer.KEY_REMOVE_SATELLITE);
+                    bundle.putString("button", "ok");
+                    bundle.putString("value1", name != null ? name : "");
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_REMOVE_SATELLITE, bundle);
+                    if (mAlertDialog != null) {
+                        mAlertDialog.dismiss();
+                    }
+                }
+            }
+        });
+        cancel.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onClick");
+                    bundle.putString("key", ParameterMananer.KEY_REMOVE_SATELLITE);
+                    bundle.putString("button", "cancel");
+                    bundle.putString("value1", name != null ? name : "");
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_REMOVE_SATELLITE, bundle);
+                    if (mAlertDialog != null) {
+                        mAlertDialog.dismiss();
+                    }
+                }
+            }
+        });
+        mAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onDismiss");
+                    bundle.putString("key", ParameterMananer.KEY_REMOVE_SATELLITE);
+                    bundle.putString("button", "unkown");
+                    bundle.putString("value1", name != null ? name : "");
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_REMOVE_SATELLITE, bundle);
+                }
+            }
+        });
+
+        mAlertDialog.setView(mDialogView);
+    }
+
+    public void initAddTransponderDialog(final String parameter) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        mAlertDialog = builder.create();
+        mDialogView = View.inflate(mContext, R.layout.add_transponder, null);
+        mDialogTitle = (TextView) mDialogView.findViewById(R.id.dialog_title);
+        if (parameter != null) {
+            mDialogTitle.setText(R.string.dialog_edit_transponder);
+        } else {
+            mDialogTitle.setText(R.string.dialog_add_transponder);
+        }
+        final EditText satellite = (EditText)mDialogView.findViewById(R.id.edittext_satellite);
+        final EditText frequency = (EditText)mDialogView.findViewById(R.id.edittext_frequency);
+        final Spinner spinner = (Spinner)mDialogView.findViewById(R.id.spinner_polarity);
+        final EditText symbol = (EditText)mDialogView.findViewById(R.id.edittext_symbol);
+        final Button ok = (Button) mDialogView.findViewById(R.id.button1);
+        final Button cancel = (Button) mDialogView.findViewById(R.id.button2);
+        final String[] SPINNER_VALUES = {"H", "V"};
+
+        if (parameter != null) {
+            String satellitename1 = "";
+            String frequency1 = "";
+            String polarity1 = "";
+            String symbolrate1 = "";
+            String[] list = parameter.split(",");
+            if (list != null && list.length > 0) {
+                for (int i = 0; i < list.length; i++) {
+                    switch (i) {
+                        case 0:
+                            satellitename1 = list[0];
+                            break;
+                        case 1:
+                            frequency1 = list[1];
+                            break;
+                        case 2:
+                            polarity1 = list[2];
+                            break;
+                        case 3:
+                            symbolrate1 = list[3];
+                            break;
+                        default:
+                            Log.d(TAG, "erro part");
+                            break;
+                    }
+                }
+            }
+
+            satellite.setHint(satellitename1);
+            frequency.setHint(frequency1);
+            mSpinnerValue = polarity1;
+            spinner.setSelection("H".equals(polarity1) ? 0 : 1);
+            symbol.setHint(symbolrate1);
+        }
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mSpinnerValue = SPINNER_VALUES[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        ok.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onClick");
+                    bundle.putString("key", ParameterMananer.KEY_ADD_TRANSPONDER);
+                    bundle.putString("button", "ok");
+                    bundle.putString("value1", satellite.getText() != null ? satellite.getText().toString() : (satellite.getHint() != null ? satellite.getHint().toString() : ""));
+                    bundle.putString("value2", frequency.getText() != null ? frequency.getText().toString() : (frequency.getHint() != null ? frequency.getHint().toString() : ""));
+                    bundle.putString("value3", mSpinnerValue != null ? mSpinnerValue : "");
+                    bundle.putString("value4", symbol.getText() != null ? symbol.getText().toString() : (symbol.getHint() != null ? symbol.getHint().toString() : ""));
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_ADD_TRANSPONDER, bundle);
+                    if (mAlertDialog != null) {
+                        mAlertDialog.dismiss();
+                    }
+                }
+            }
+        });
+        cancel.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onClick");
+                    bundle.putString("key", ParameterMananer.KEY_ADD_TRANSPONDER);
+                    bundle.putString("button", "cancel");
+                    bundle.putString("value1", satellite.getText() != null ? satellite.getText().toString() : (satellite.getHint() != null ? satellite.getHint().toString() : ""));
+                    bundle.putString("value2", frequency.getText() != null ? frequency.getText().toString() : (frequency.getHint() != null ? frequency.getHint().toString() : ""));
+                    bundle.putString("value3", mSpinnerValue != null ? mSpinnerValue : "");
+                    bundle.putString("value4", symbol.getText() != null ? symbol.getText().toString() : (symbol.getHint() != null ? symbol.getHint().toString() : ""));
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_ADD_TRANSPONDER, bundle);
+                    if (mAlertDialog != null) {
+                        mAlertDialog.dismiss();
+                    }
+                }
+            }
+        });
+        mAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onDismiss");
+                    bundle.putString("key", ParameterMananer.KEY_ADD_TRANSPONDER);
+                    bundle.putString("button", "cancel");
+                    bundle.putString("value1", satellite.getText() != null ? satellite.getText().toString() : "");
+                    bundle.putString("value2", frequency.getText() != null ? frequency.getText().toString() : "");
+                    bundle.putString("value3", mSpinnerValue != null ? mSpinnerValue : "");
+                    bundle.putString("value4", symbol.getText() != null ? symbol.getText().toString() : "");
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_ADD_TRANSPONDER, bundle);
+                }
+            }
+        });
+
+        mAlertDialog.setView(mDialogView);
+    }
+
+    public void initRemoveTransponderDialog(final String parameter) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        mAlertDialog = builder.create();
+        mDialogView = View.inflate(mContext, R.layout.remove_transponder, null);
+        mDialogTitle = (TextView) mDialogView.findViewById(R.id.dialog_title);
+        mDialogTitle.setText(R.string.dialog_remove_transponder);
+
+        final Button ok = (Button) mDialogView.findViewById(R.id.button1);
+        final Button cancel = (Button) mDialogView.findViewById(R.id.button2);
+
+        ok.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onClick");
+                    bundle.putString("key", ParameterMananer.KEY_REMOVE_TRANSPONDER);
+                    bundle.putString("button", "ok");
+                    bundle.putString("value1", parameter != null ? parameter : "");
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_REMOVE_TRANSPONDER, bundle);
+                    if (mAlertDialog != null) {
+                        mAlertDialog.dismiss();
+                    }
+                }
+            }
+        });
+        cancel.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onClick");
+                    bundle.putString("key", ParameterMananer.KEY_REMOVE_TRANSPONDER);
+                    bundle.putString("button", "cancel");
+                    bundle.putString("value1", parameter != null ? parameter : "");
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_REMOVE_TRANSPONDER, bundle);
+                    if (mAlertDialog != null) {
+                        mAlertDialog.dismiss();
+                    }
+                }
+            }
+        });
+        mAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (mDialogCallBack != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("action", "onDismiss");
+                    bundle.putString("key", ParameterMananer.KEY_REMOVE_TRANSPONDER);
+                    bundle.putString("button", "unkown");
+                    bundle.putString("value1", parameter != null ? parameter : "");
+                    mDialogCallBack.onStatusChange(ok, ParameterMananer.KEY_REMOVE_TRANSPONDER, bundle);
+                }
+            }
+        });
+
+        mAlertDialog.setView(mDialogView);
     }
 
     public CustomDialog creatEditTransponderDialog() {
@@ -694,10 +1025,10 @@ public class CustomDialog extends AlertDialog {
         return this;
     }
 
-    public CustomDialog creatConfirmDialog() {
-        CustomDialog dialog = null;
+    public AlertDialog creatConfirmDialog() {
+        AlertDialog dialog = null;
         AlertDialog.Builder builder = null;
-        dialog = (CustomDialog) builder.setPositiveButton(getContext().getString(R.string.dialog_ok), new OnClickListener() {
+        dialog = (AlertDialog) builder.setPositiveButton(mContext.getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Bundle bundle = new Bundle();
@@ -705,7 +1036,7 @@ public class CustomDialog extends AlertDialog {
                 mDialogCallBack.onStatusChange(null, mDialogType, bundle);
             }
         })
-        .setNegativeButton(getContext().getString(R.string.dialog_cancel), new OnClickListener() {
+        .setNegativeButton(mContext.getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Bundle bundle = new Bundle();
@@ -713,7 +1044,7 @@ public class CustomDialog extends AlertDialog {
                 mDialogCallBack.onStatusChange(null, mDialogType, bundle);
             }
         }).create();
-        dialog.setContentView(R.layout.confirm);
+        //dialog.setContentView(R.layout.confirm);
         return dialog;
     }
 }

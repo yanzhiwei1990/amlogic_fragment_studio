@@ -13,14 +13,14 @@
         layout="@layout/add_display" />
 
     <include
-        android:id="@+id/icon_scan_all"
-        layout="@layout/scan_display" />
+        android:id="@+id/icon_edit_all"
+        layout="@layout/edit_display" />
 
     <include
         android:id="@+id/icon_delete_all"
         layout="@layout/delete_display" />
 
     <include
-        android:id="@+id/icon_edit_all"
-        layout="@layout/edit_display" />
+        android:id="@+id/icon_scan_all"
+        layout="@layout/scan_display" />
 </LinearLayout>

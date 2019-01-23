@@ -1,4 +1,4 @@
-package com.example.fragment;
+package com.droidlogic.fragment;
 
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
@@ -52,7 +52,8 @@ public class PlaceholderFragment extends Fragment {
 					mCurrentFragment = SCAN_FRAGMENT;*/
                 try {
                     Intent intent = getActivity().getIntent();
-                    intent.setClassName("com.android.tv", "com.android.tv.droidlogic.ChannelSearchActivity");
+                    //intent.setClassName("com.android.tv", "com.android.tv.droidlogic.ChannelSearchActivity");
+                    intent.setClassName("org.dtvkit.inputsource", "org.dtvkit.inputsource.DtvkitDvbsSetup");
                     getActivity().startActivityForResult(intent, ScanMainActivity.REQUEST_CODE_START_SETUP_ACTIVITY);
                     Log.d(TAG, "ScanChannelFragment");
                 } catch (ActivityNotFoundException e) {

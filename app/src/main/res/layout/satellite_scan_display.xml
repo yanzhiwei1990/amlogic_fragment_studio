@@ -8,9 +8,9 @@
     android:gravity="center_vertical|center_horizontal"
     android:orientation="horizontal">
 
-    <include
+    <!--<include
         android:id="@+id/icon_satellite_all"
-        layout="@layout/satellite_display" />
+        layout="@layout/satellite_display" />-->
 
     <include
         android:id="@+id/icon_scan_all"

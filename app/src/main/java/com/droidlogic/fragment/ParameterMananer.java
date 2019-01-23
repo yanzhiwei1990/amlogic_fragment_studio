@@ -1,12 +1,12 @@
-package com.example.fragment;
+package com.droidlogic.fragment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.example.fragment.ItemAdapter.ItemDetail;
-import com.example.fragment.dialog.CustomDialog;
+import com.droidlogic.fragment.ItemAdapter.ItemDetail;
+import com.droidlogic.fragment.dialog.CustomDialog;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -74,6 +74,14 @@ public class ParameterMananer {
 	public static final String KEY_DISEQC1_0_DEFAULT_VALUE = "None";
 	public static final String KEY_DISEQC1_1_DEFAULT_VALUE = "None";
 	public static final String KEY_MOTOR_DEFAULT_VALUE = "None";
+
+	public static final String KEY_FUNCTION = "function";
+	public static final String KEY_ADD_SATELLITE = "add_satellite";
+	public static final String KEY_EDIT_SATELLITE = "edit_satellite";
+	public static final String KEY_REMOVE_SATELLITE = "remove_satellite";
+	public static final String KEY_ADD_TRANSPONDER = "add_transponder";
+	public static final String KEY_EDIT_TRANSPONDER = "edit_transponder";
+	public static final String KEY_REMOVE_TRANSPONDER = "remove_transponder";
 
 	//default value that is save by index
 	public static final int KEY_SATALLITE_DEFAULT_VALUE_INDEX = 0;
@@ -619,5 +627,22 @@ public class ParameterMananer {
 	public void moveDishToPosition(int position) {
 
 		Log.d(TAG, "moveDishToPosition need add function " + position + "->" + position);
+	}
+
+	public String getSatelliteName(String name) {
+
+		return name;
+	}
+
+	public String getSatelliteDirection(String name) {
+		String result = "east";
+		Log.d(TAG, "getSatelliteDirection need to add " + result);
+		return result;
+	}
+
+	public String getSatelliteLongitude(String name) {
+		String result = "90";
+		Log.d(TAG, "getSatelliteLongitude need to add" + result);
+		return result;
 	}
 }

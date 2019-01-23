@@ -1,4 +1,4 @@
-package com.example.fragment;
+package com.droidlogic.fragment;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -20,7 +20,7 @@ import android.widget.Button;
 import android.os.Build;
 import android.widget.Toast;
 
-import com.example.fragment.dialog.DialogManager;
+import com.droidlogic.fragment.dialog.DialogManager;
 
 public class ScanMainActivity extends Activity {
     private static final String TAG = "ScanMainActivity";

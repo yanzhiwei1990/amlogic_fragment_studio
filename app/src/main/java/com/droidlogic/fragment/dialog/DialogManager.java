@@ -1,11 +1,11 @@
-package com.example.fragment.dialog;
+package com.droidlogic.fragment.dialog;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 import android.widget.AdapterView;
 
-import com.example.fragment.ParameterMananer;
+import com.droidlogic.fragment.ParameterMananer;
 
 public class DialogManager {
 
@@ -48,6 +48,29 @@ public class DialogManager {
         return customDialog;
     }
 
+    public CustomDialog buildAddTransponderDialogDialog(String parameter, DialogCallBack callBack) {
+        CustomDialog customDialog = new CustomDialog(mContext, CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM, callBack, mParameterMananer);
+        customDialog.initAddTransponderDialog(parameter);
+        return customDialog;
+    }
+
+    public CustomDialog buildRemoveTransponderDialogDialog(String parameter, DialogCallBack callBack) {
+        CustomDialog customDialog = new CustomDialog(mContext, CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM, callBack, mParameterMananer);
+        customDialog.initRemoveTransponderDialog(parameter);
+        return customDialog;
+    }
+
+    public CustomDialog buildAddSatelliteDialogDialog(String name, DialogCallBack callBack) {
+        CustomDialog customDialog = new CustomDialog(mContext, CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM, callBack, mParameterMananer);
+        customDialog.initAddSatelliteDialog(name);
+        return customDialog;
+    }
+
+    public CustomDialog buildRemoveSatelliteDialogDialog(String name, DialogCallBack callBack) {
+        CustomDialog customDialog = new CustomDialog(mContext, CustomDialog.DIALOG_SET_EDIT_SWITCH_ITEM, callBack, mParameterMananer);
+        customDialog.initRemoveSatelliteDialog(name);
+        return customDialog;
+    }
     /*public AlertDialog buildItemDialogByKey(String key, DialogCallBack callBack) {
         CustomDialog customDialog = new CustomDialog(mContext, CustomDialog.DIALOG_SET_SELECT_SINGLE_ITEM, callBack, mParameterMananer);
         AlertDialog selectSingleItemDialog = customDialog.creatSelectSingleItemDialog(null, key, mParameterMananer.getIntParameters(key));

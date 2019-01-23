@@ -1,4 +1,4 @@
-package com.example.fragment;
+package com.droidlogic.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;

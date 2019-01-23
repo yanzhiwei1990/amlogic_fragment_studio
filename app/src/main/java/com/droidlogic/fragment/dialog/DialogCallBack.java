@@ -1,4 +1,4 @@
-package com.example.fragment.dialog;
+package com.droidlogic.fragment.dialog;
 
 import android.os.Bundle;
 import android.view.View;

@@ -1,4 +1,4 @@
-package com.example.fragment;
+package com.droidlogic.fragment;
 
 import java.util.LinkedList;
 

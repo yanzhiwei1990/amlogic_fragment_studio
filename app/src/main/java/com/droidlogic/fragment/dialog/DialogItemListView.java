@@ -1,4 +1,4 @@
-package com.example.fragment.dialog;
+package com.droidlogic.fragment.dialog;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,8 +16,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fragment.ParameterMananer;
-import com.example.fragment.R;
+import com.droidlogic.fragment.ParameterMananer;
+import com.droidlogic.fragment.R;
 
 public class DialogItemListView extends ListView implements OnItemSelectedListener/*, AdapterView.OnItemClickListener, , View.OnFocusChangeListener*/ {
     private static final String TAG = "DialogItemListView";

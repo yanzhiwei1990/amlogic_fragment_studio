@@ -1,4 +1,4 @@
-package com.example.fragment.dialog;
+package com.droidlogic.fragment.dialog;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.fragment.R;
+import com.droidlogic.fragment.R;
 
 import java.util.LinkedList;
 import java.util.regex.Pattern;

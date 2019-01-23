@@ -19,7 +19,7 @@
         android:textSize="14sp"
         android:title="title" />
 
-    <com.example.fragment.dialog.DialogItemListView
+    <com.droidlogic.fragment.dialog.DialogItemListView
         android:id="@+id/switch_edit_item_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

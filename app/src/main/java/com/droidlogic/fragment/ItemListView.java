@@ -1,10 +1,11 @@
-package com.example.fragment;
+package com.droidlogic.fragment;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,6 +20,8 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.util.AttributeSet;
 import android.util.Log;
+
+import com.droidlogic.fragment.dialog.DialogCallBack;
 
 public class ItemListView extends ListView implements OnItemSelectedListener {
     private static final String TAG = "ItemListView";
@@ -36,6 +39,7 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     private ListItemFocusedListener mListItemFocusedListener;
     private ListSwitchedListener mListSwitchedListener;
     private ListTypeSwitchedListener mListTypeSwitchedListener;
+    private DialogCallBack mDataCallBack;
 
     private ParameterMananer mParameterMananer;
     
@@ -60,6 +64,40 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     public boolean dispatchKeyEvent (KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
+                case KeyEvent.KEYCODE_PROG_RED:
+                case KeyEvent.KEYCODE_PROG_GREEN:
+                case KeyEvent.KEYCODE_PROG_BLUE:
+                case KeyEvent.KEYCODE_PROG_YELLOW:
+                    if (mDataCallBack != null) {
+                        Bundle bundle1 = new Bundle();
+                        String function = "";
+                        if (event.getKeyCode() == KeyEvent.KEYCODE_PROG_RED) {
+                            function = "add";
+                        } else if (event.getKeyCode() == KeyEvent.KEYCODE_PROG_GREEN) {
+                            function = "edit";
+                        } else if (event.getKeyCode() == KeyEvent.KEYCODE_PROG_BLUE) {
+                            function = "scan";
+                        } else if (event.getKeyCode() == KeyEvent.KEYCODE_PROG_YELLOW) {
+                            function = "delete";
+                        }
+                        bundle1.putString("action", function);
+                        bundle1.putInt("keycode", event.getKeyCode());
+                        bundle1.putString("listtype", mListType);
+                        String parameter = "";
+                        View selectedView1 = getSelectedView();
+                        TextView textview = null;
+                        if (selectedView1 != null) {
+                            textview = (TextView) selectedView1.findViewById(R.id.textview_second);
+                        }
+                        if (isSatelliteList(mListType)) {
+                            parameter = (textview != null && textview.getText() != null) ? textview.getText().toString() : "";//mParameterMananer.getCurrentSatellite();
+                        } else if (isTransponderList(mListType)) {
+                            parameter = (textview != null && textview.getText() != null) ? textview.getText().toString() : "";//mParameterMananer.getCurrentTransponder();
+                        }
+                        bundle1.putString("parameter", parameter);
+                        mDataCallBack.onStatusChange(getSelectedView(), ParameterMananer.KEY_FUNCTION, bundle1);
+                    }
+                    return true;
                 case KeyEvent.KEYCODE_DPAD_UP:
                     if (selectedPosition == 0)
                         return true;
@@ -240,6 +278,10 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
         mListTypeSwitchedListener = l;
     }
 
+    public void setDataCallBack(DialogCallBack callback) {
+        mDataCallBack = callback;
+    }
+
     public interface ListItemSelectedListener {
         void onListItemSelected(int position, String type);
     }
@@ -268,6 +310,20 @@ public class ItemListView extends ListView implements OnItemSelectedListener {
     		return true;
     	}
     	return false;
+    }
+
+    static public boolean isSatelliteList(String type) {
+        if (ITEM_SATALLITE.equals(type)) {
+            return true;
+        }
+        return false;
+    }
+
+    static public boolean isTransponderList(String type) {
+        if (ITEM_TRANSPONDER.equals(type)) {
+            return true;
+        }
+        return false;
     }
 
     private void switchListType(boolean isRight) {

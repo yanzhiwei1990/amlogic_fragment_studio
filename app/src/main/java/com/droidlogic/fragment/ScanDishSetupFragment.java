@@ -1,20 +1,21 @@
-package com.example.fragment;
+package com.droidlogic.fragment;
 
 import java.util.LinkedList;
 
-import com.example.fragment.ItemAdapter.ItemDetail;
-import com.example.fragment.ItemListView.ListItemFocusedListener;
-import com.example.fragment.ItemListView.ListItemSelectedListener;
-import com.example.fragment.ItemListView.ListSwitchedListener;
-import com.example.fragment.ItemListView.ListTypeSwitchedListener;
-import com.example.fragment.R.color;
-import com.example.fragment.dialog.CustomDialog;
-import com.example.fragment.dialog.DialogCallBack;
-import com.example.fragment.dialog.DialogManager;
+import com.droidlogic.fragment.ItemAdapter.ItemDetail;
+import com.droidlogic.fragment.ItemListView.ListItemFocusedListener;
+import com.droidlogic.fragment.ItemListView.ListItemSelectedListener;
+import com.droidlogic.fragment.ItemListView.ListSwitchedListener;
+import com.droidlogic.fragment.ItemListView.ListTypeSwitchedListener;
+import com.droidlogic.fragment.R.color;
+import com.droidlogic.fragment.dialog.CustomDialog;
+import com.droidlogic.fragment.dialog.DialogCallBack;
+import com.droidlogic.fragment.dialog.DialogManager;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,6 +29,9 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import static com.droidlogic.fragment.ParameterMananer.ITEM_SATALLITE;
+import static com.droidlogic.fragment.ParameterMananer.ITEM_TRANSPONDER;
 
 public class ScanDishSetupFragment extends Fragment {
 
@@ -71,10 +75,10 @@ public class ScanDishSetupFragment extends Fragment {
 		mItemDetailItem.addAll(mParameterMananer.getItemList(mParameterMananer.getCurrentListType()));
 		mItemAdapterItem = new ItemAdapter(mItemDetailItem, getActivity());
 		mListViewItem.setAdapter(mItemAdapterItem);
-		mListViewItem.setTag(/*mParameterMananer.getCurrentListType()*/ParameterMananer.ITEM_SATALLITE);
+		mListViewItem.setTag(/*mParameterMananer.getCurrentListType()*/ITEM_SATALLITE);
 
 		mItemTitleTextView = (TextView) rootView.findViewById(R.id.listview_item_title);
-        mItemTitleTextView.setText(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? R.string.list_type_satellite : R.string.list_type_transponder);
+        mItemTitleTextView.setText(ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? R.string.list_type_satellite : R.string.list_type_transponder);
 		mListViewItem.requestFocus();
 
 		mListViewItem.setListItemSelectedListener(mListItemSelectedListener);
@@ -82,15 +86,16 @@ public class ScanDishSetupFragment extends Fragment {
 		mListViewItem.setListSwitchedListener(mListSwitchedListener);
 		mListViewItem.setListTypeSwitchedListener(mListTypeSwitchedListener);
 		mListViewItem.setListType(/*mParameterMananer.getCurrentListType()*/ItemListView.ITEM_SATALLITE);
+		mListViewItem.setDataCallBack(mSingleSelectDialogCallBack);
 		
 		mItemDetailOption.addAll(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), mParameterMananer.getCurrentSatelliteIndex()));
 		mItemAdapterOption = new ItemAdapter(mItemDetailOption, getActivity());
 		mListViewOption.setAdapter(mItemAdapterOption);
 		mListViewItem.setTag(ParameterMananer.ITEM_SATALLITE_OPTION);
-		mListViewItem.setSelection(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex());
+		mListViewItem.setSelection(ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex());
 
 		mOptionTitleItemTextView = (TextView) rootView.findViewById(R.id.listview_option_title);
-        mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex())/*"Ku_NewSat2"*/);
+        mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex())/*"Ku_NewSat2"*/);
 
 		//mListViewOption.setSelectionAfterHeaderView();
 		mListViewOption.setListItemSelectedListener(mListItemSelectedListener);
@@ -388,6 +393,61 @@ public class ScanDishSetupFragment extends Fragment {
 						}
 					}
 					break;
+				case ParameterMananer.KEY_FUNCTION:
+					if (data != null) {
+						String action = data.getString("action");
+						String listtype = data.getString("listtype");
+						switch (action) {
+							case "add":
+								if (ITEM_SATALLITE.equals(data.getString("listtype"))) {
+									mCurrentCustomDialog = mDialogManager.buildAddSatelliteDialogDialog(null, mSingleSelectDialogCallBack);
+								} else if (ITEM_TRANSPONDER.equals(data.getString("listtype"))) {
+									mCurrentCustomDialog = mDialogManager.buildAddTransponderDialogDialog(null, mSingleSelectDialogCallBack);
+								} else {
+									Log.d(TAG, "not sure");
+									mCurrentCustomDialog = null;
+								}
+								if (mCurrentCustomDialog != null) {
+									mCurrentCustomDialog.showDialog();
+								}
+								break;
+							case "edit":
+								if (ITEM_SATALLITE.equals(data.getString("listtype"))) {
+									mCurrentCustomDialog = mDialogManager.buildAddSatelliteDialogDialog(data.getString("parameter"), mSingleSelectDialogCallBack);
+								} else if (ITEM_TRANSPONDER.equals(data.getString("listtype"))) {
+									mCurrentCustomDialog = mDialogManager.buildAddTransponderDialogDialog(data.getString("parameter"), mSingleSelectDialogCallBack);
+								} else {
+									Log.d(TAG, "not sure");
+									mCurrentCustomDialog = null;
+								}
+								if (mCurrentCustomDialog != null) {
+									mCurrentCustomDialog.showDialog();
+								}
+								break;
+							case "delete":
+								if (ITEM_SATALLITE.equals(data.getString("listtype"))) {
+									mCurrentCustomDialog = mDialogManager.buildRemoveSatelliteDialogDialog(data.getString("parameter"), mSingleSelectDialogCallBack);
+								} else if (ITEM_TRANSPONDER.equals(data.getString("listtype"))) {
+									mCurrentCustomDialog = mDialogManager.buildRemoveTransponderDialogDialog(data.getString("parameter"), mSingleSelectDialogCallBack);
+								} else {
+									Log.d(TAG, "not sure");
+									mCurrentCustomDialog = null;
+								}
+								if (mCurrentCustomDialog != null) {
+									mCurrentCustomDialog.showDialog();
+								}
+								break;
+							case "scan":
+								Intent intent = new Intent();
+								intent.setClassName("org.dtvkit.inputsource", "org.dtvkit.inputsource.DtvkitDvbsSetup");
+								getActivity().startActivityForResult(intent, ScanMainActivity.REQUEST_CODE_START_SETUP_ACTIVITY);
+								//getActivity().finish();
+								break;
+							default:
+								break;
+						}
+					}
+					break;
 				default:
 					break;
 			}
@@ -401,7 +461,7 @@ public class ScanDishSetupFragment extends Fragment {
 			Log.d(TAG, "onListItemSelected position = " + position + ", type = " + type);
 			if (ItemListView.LIST_LEFT.equals(mCurrentListFocus)) {
 				String listtype = mParameterMananer.getCurrentListType();
-				if (ParameterMananer.ITEM_SATALLITE.equals(listtype)) {
+				if (ITEM_SATALLITE.equals(listtype)) {
 					LinkedList<ItemDetail> items = mParameterMananer.getSatelliteList();
 					mParameterMananer.setCurrentSatellite(items != null ? items.get(position).getFirstText() : "null");
 				} else if (ParameterMananer.ITEM_TRANSPONDER.equals(listtype)) {
@@ -511,7 +571,7 @@ public class ScanDishSetupFragment extends Fragment {
 				creatConfirmandExit1();
 				creatSatelliteandScan2();
             }
-			if (ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType)) {
+			if (ITEM_SATALLITE.equals(mCurrentListType)) {
 				mListViewItem.setSelection(mParameterMananer.getCurrentSatelliteIndex());
 			} else if (ParameterMananer.ITEM_TRANSPONDER.equals(mCurrentListType)) {
 				mListViewItem.setSelection(mParameterMananer.getCurrentTransponderIndex());
@@ -527,19 +587,19 @@ public class ScanDishSetupFragment extends Fragment {
 			mParameterMananer.setCurrentListType(mCurrentListType);
 			mListViewItem.cleanChoosed();
 			mItemAdapterItem.reFill(mParameterMananer.getItemList(mParameterMananer.getCurrentListType()));
-			if (ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType)) {
+			if (ITEM_SATALLITE.equals(mCurrentListType)) {
 				mListViewItem.setSelection(mParameterMananer.getCurrentSatelliteIndex());
 			} else {
 				mListViewItem.setSelection(mParameterMananer.getCurrentTransponderIndex());
 			}
 			mListViewItem.requestFocus();
-            mItemTitleTextView.setText(ParameterMananer.ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? R.string.list_type_satellite : R.string.list_type_transponder);
-			mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_SATALLITE.equals(mCurrentListType) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex()));
+            mItemTitleTextView.setText(ITEM_SATALLITE.equals(mParameterMananer.getCurrentListType()) ? R.string.list_type_satellite : R.string.list_type_transponder);
+			mItemAdapterOption.reFill(mParameterMananer.getCompleteParameterList(mParameterMananer.getCurrentListType(), ITEM_SATALLITE.equals(mCurrentListType) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex()));
 			mListViewOption.cleanChoosed();
             mOptionTitleItemTextView.setText(mParameterMananer.getParameterListTitle(mParameterMananer.getCurrentListType(), ParameterMananer.ITEM_TRANSPONDER.equals(mParameterMananer.getCurrentListType()) ? mParameterMananer.getCurrentSatelliteIndex() : mParameterMananer.getCurrentTransponderIndex())/*"Ku_NewSat2"*/);
 		}
 	};
-	
+
 	/*public boolean dispatchKeyEvent (KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
